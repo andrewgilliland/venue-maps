@@ -20,7 +20,7 @@ export default function CustomImageMap() {
 
     map.current = new Map({
       container: mapContainer.current,
-      style: "https://demotiles.maplibre.org/globe.json",
+      style: "https://demotiles.maplibre.org/style.json",
       center: [0, 0], // starting position [lng, lat]
       zoom: 2, // keeps view within image
     });
@@ -33,13 +33,17 @@ export default function CustomImageMap() {
     //     .addTo(map.current!);
     // });
 
-    return () => map.current?.remove();
+    return () => {
+      console.log(map);
+      map.current?.remove();
+      map.current = null; // Reset the ref so map can be recreated
+    };
   }, []);
 
   return (
     <div
       ref={mapContainer}
-      className="w-full h-[600px] rounded-lg border border-gray-300"
+      className="w-[650px] h-[650px] rounded-lg border border-gray-300"
     />
   );
 }
