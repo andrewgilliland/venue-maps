@@ -6,6 +6,9 @@ export default function CustomImageMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
 
+  const style = "https://demotiles.maplibre.org/style.json";
+  const globe = "../../data/globe.json";
+
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
 
@@ -20,7 +23,7 @@ export default function CustomImageMap() {
 
     map.current = new Map({
       container: mapContainer.current,
-      style: "https://demotiles.maplibre.org/style.json",
+      style: globe,
       center: [0, 0], // starting position [lng, lat]
       zoom: 2, // keeps view within image
     });
