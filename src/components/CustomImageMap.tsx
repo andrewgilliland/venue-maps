@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Map, Popup, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import "./CustomImageMap.css";
 
 export default function CustomImageMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -377,89 +378,60 @@ export default function CustomImageMap() {
   }, []);
 
   return (
-    <>
-      {/* Custom CSS to remove white background from popups */}
-      <style>{`
-        .custom-hover-popup .maplibregl-popup-content {
-          background: transparent !important;
-          border: none !important;
-          border-radius: 0 !important;
-          box-shadow: none !important;
-          padding: 0 !important;
-        }
-        
-        .custom-hover-popup .maplibregl-popup-tip {
-          display: none !important;
-        }
-        
-        .custom-click-popup .maplibregl-popup-content {
-          background: transparent !important;
-          border: none !important;
-          border-radius: 0 !important;
-          box-shadow: none !important;
-          padding: 0 !important;
-        }
-        
-        .custom-click-popup .maplibregl-popup-tip {
-          display: none !important;
-        }
-      `}</style>
+    <div className="flex gap-4">
+      {/* Map Container */}
+      <div
+        ref={mapContainer}
+        className="w-[650px] h-[650px] rounded-lg border border-gray-300"
+      />
 
-      <div className="flex gap-4">
-        {/* Map Container */}
-        <div
-          ref={mapContainer}
-          className="w-[650px] h-[650px] rounded-lg border border-gray-300"
-        />
+      {/* Heat Map Legend */}
+      <div className="w-[200px] p-4 bg-gray-50 rounded-lg border border-gray-300">
+        <h3 className="font-bold text-lg mb-4">Sales Heat Map</h3>
 
-        {/* Heat Map Legend */}
-        <div className="w-[200px] p-4 bg-gray-50 rounded-lg border border-gray-300">
-          <h3 className="font-bold text-lg mb-4">Sales Heat Map</h3>
-
-          {/* Legend Items */}
-          <div className="space-y-2 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-red-500 rounded"></div>
-              <span>0-25% - Poor Sales</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-orange-500 rounded"></div>
-              <span>25-50% - Below Average</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-              <span>50-75% - Average</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-500 rounded"></div>
-              <span>75-90% - Good Sales</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-600 rounded"></div>
-              <span>90%+ - Excellent</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-800 rounded"></div>
-              <span>100% - Sold Out</span>
-            </div>
+        {/* Legend Items */}
+        <div className="space-y-2 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-red-500 rounded"></div>
+            <span>0-25% - Poor Sales</span>
           </div>
-
-          {/* Summary Stats */}
-          <hr className="my-4" />
-          <div className="text-sm space-y-1">
-            <p className="font-semibold">Quick Stats:</p>
-            <p>Total Capacity: 152 seats</p>
-            <p>Total Sold: 122 seats</p>
-            <p>Overall Sales: 80.3%</p>
-            <p>Total Revenue: $4,265</p>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-orange-500 rounded"></div>
+            <span>25-50% - Below Average</span>
           </div>
-
-          <hr className="my-4" />
-          <p className="text-xs text-gray-600">
-            Click on any section for detailed information
-          </p>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-yellow-500 rounded"></div>
+            <span>50-75% - Average</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-500 rounded"></div>
+            <span>75-90% - Good Sales</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-600 rounded"></div>
+            <span>90%+ - Excellent</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-800 rounded"></div>
+            <span>100% - Sold Out</span>
+          </div>
         </div>
+
+        {/* Summary Stats */}
+        <hr className="my-4" />
+        <div className="text-sm space-y-1">
+          <p className="font-semibold">Quick Stats:</p>
+          <p>Total Capacity: 152 seats</p>
+          <p>Total Sold: 122 seats</p>
+          <p>Overall Sales: 80.3%</p>
+          <p>Total Revenue: $4,265</p>
+        </div>
+
+        <hr className="my-4" />
+        <p className="text-xs text-gray-600">
+          Click on any section for detailed information
+        </p>
       </div>
-    </>
+    </div>
   );
 }
