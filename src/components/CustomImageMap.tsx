@@ -10,7 +10,9 @@ export default function CustomImageMap() {
   const map = useRef<Map | null>(null);
   const hoverPopup = useRef<Popup | null>(null);
 
-  const sourceName = "venue-image";
+  // Define source names as constants
+  const imageSourceName = "venue-image";
+  const seatingLayerName = "seating-sections";
   const detailLayerName = "detailed-features";
 
   // GeoJSON data for seating sections with sales data
@@ -277,7 +279,7 @@ export default function CustomImageMap() {
       console.log("Map loaded, initial zoom:", map.current!.getZoom());
 
       // 🖼️ 2. Add your custom image source
-      map.current!.addSource(sourceName, {
+      map.current!.addSource(imageSourceName, {
         type: "image",
         url: "/baseball-field.png", // your custom image file from public folder
         coordinates: [
@@ -295,7 +297,7 @@ export default function CustomImageMap() {
       map.current!.on("sourcedata", (e) => {
         console.log("Source data event:", e);
 
-        if (e.sourceId === sourceName && e.isSourceLoaded) {
+        if (e.sourceId === imageSourceName && e.isSourceLoaded) {
           console.log("Image source loaded successfully");
         }
       });
@@ -304,14 +306,14 @@ export default function CustomImageMap() {
       map.current!.addLayer({
         id: "venue-image-layer",
         type: "raster",
-        source: sourceName,
+        source: imageSourceName,
         paint: {
           "raster-fade-duration": 0,
         },
       });
 
       // 🗂️ 5. Add seating sections source
-      map.current!.addSource("seating-sections", {
+      map.current!.addSource(seatingLayerName, {
         type: "geojson",
         data: seatingData,
       });
@@ -320,7 +322,7 @@ export default function CustomImageMap() {
       map.current!.addLayer({
         id: "seating-fill",
         type: "fill",
-        source: "seating-sections",
+        source: seatingLayerName,
         paint: {
           "fill-color": [
             "interpolate",
@@ -348,7 +350,7 @@ export default function CustomImageMap() {
       map.current!.addLayer({
         id: "seating-outline",
         type: "line",
-        source: "seating-sections",
+        source: seatingLayerName,
         paint: {
           "line-color": "#ffffff",
           "line-width": 2,
@@ -359,7 +361,7 @@ export default function CustomImageMap() {
       map.current!.addLayer({
         id: "seating-labels",
         type: "symbol",
-        source: "seating-sections",
+        source: seatingLayerName,
         minzoom: 8, // Only show labels when zoomed in enough
         maxzoom: 24,
         layout: {
