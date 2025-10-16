@@ -2,22 +2,8 @@ import { useEffect, useRef } from "react";
 import { Map, Popup, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./CustomImageMap.css";
-
-type SalesStatus =
-  | "🔥 Hot Seller!"
-  | "✅ Good Sales"
-  | "⚠️ Average Sales"
-  | "❄️ Slow Sales";
-
-type SectionProperties = {
-  section: string;
-  capacity: number;
-  price: string;
-  tier: string;
-  seatsSold: number;
-  revenue: number;
-  salesPercentage: number;
-};
+import { renderSectionPopoverToString } from "./SectionPopover";
+import type { SectionProperties } from "./SectionPopover";
 
 export default function CustomImageMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -271,29 +257,6 @@ export default function CustomImageMap() {
       },
     ],
   };
-
-  const sectionPopover: (
-    properties: SectionProperties,
-    seatsAvailable: number,
-    salesStatus: SalesStatus
-  ) => string = (properties, seatsAvailable, salesStatus) =>
-    `
-            <div class="p-4 min-w-[240px] bg-white rounded-lg shadow-2xl border border-gray-200">
-              <h3 class="font-bold text-lg mb-3 text-gray-900">${properties.section}</h3>
-              <div class="space-y-2 text-sm">
-                <p class="text-gray-700"><strong>Tier:</strong> ${properties.tier}</p>
-                <p class="text-gray-700"><strong>Price:</strong> ${properties.price}</p>
-                <hr class="my-3 border-gray-300">
-                <p class="text-gray-700"><strong>Capacity:</strong> ${properties.capacity} seats</p>
-                <p class="text-gray-700"><strong>Sold:</strong> ${properties.seatsSold} seats</p>
-                <p class="text-gray-700"><strong>Available:</strong> ${seatsAvailable} seats</p>
-                <p class="text-gray-700"><strong>Sales:</strong> ${properties.salesPercentage}%</p>
-                <p class="text-gray-700"><strong>Revenue:</strong> $${properties.revenue}</p>
-                <hr class="my-3 border-gray-300">
-                <p class="font-semibold text-gray-900">${salesStatus}</p>
-              </div>
-            </div>
-          `;
 
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
@@ -570,7 +533,13 @@ export default function CustomImageMap() {
           className: "custom-click-popup",
         })
           .setLngLat(e.lngLat)
-          .setHTML(sectionPopover(properties, seatsAvailable, salesStatus))
+          .setHTML(
+            renderSectionPopoverToString(
+              properties,
+              seatsAvailable,
+              salesStatus
+            )
+          )
           .addTo(map.current!);
       });
 
