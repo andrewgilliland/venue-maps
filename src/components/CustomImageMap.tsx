@@ -274,6 +274,8 @@ export default function CustomImageMap() {
       },
       center: [0, 0],
       zoom: 8, // Much higher zoom to see the image better
+      minZoom: 7,
+      maxZoom: 10,
     });
 
     map.current.on("load", () => {
@@ -570,7 +572,7 @@ export default function CustomImageMap() {
           .setHTML(
             `
             <div class="p-3 text-center bg-gray-900 text-white rounded-lg shadow-xl border-0">
-              <div class="font-semibold text-sm">${properties.section}</div>
+              <div class="font-semibold text-sm">Section ${properties.section}</div>
             </div>
           `
           )
