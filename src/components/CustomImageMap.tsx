@@ -7,43 +7,6 @@ export default function CustomImageMap() {
   const map = useRef<Map | null>(null);
   const hoverPopup = useRef<Popup | null>(null);
 
-  // const style = "https://demotiles.maplibre.org/style.json";
-  // const globe = "../../data/globe.json";
-
-  // useEffect(() => {
-  //   if (map.current || !mapContainer.current) return;
-
-  //   // Coordinates define the corners of your image in "map space"
-  //   // (you can think of these as longitude/latitude, but they can be arbitrary if you're not using real-world maps)
-  //   // const bounds: [number, number][] = [
-  //   //   [0, 0], // bottom-left
-  //   //   [1000, 0], // bottom-right
-  //   //   [1000, 500], // top-right
-  //   //   [0, 500], // top-left
-  //   // ];
-
-  //   map.current = new Map({
-  //     container: mapContainer.current,
-  //     style: globe,
-  //     center: [0, 0], // starting position [lng, lat]
-  //     zoom: 2, // keeps view within image
-  //   });
-
-  //   // Example: add a marker over 2nd base
-  //   // map.current.on("load", () => {
-  //   //   new Marker({ color: "#e63946" })
-  //   //     .setLngLat([-79.5, 34.5])
-  //   //     .setPopup(new Popup().setHTML("<b>Second Base</b>"))
-  //   //     .addTo(map.current!);
-  //   // });
-
-  //   return () => {
-  //     console.log(map);
-  //     map.current?.remove();
-  //     map.current = null; // Reset the ref so map can be recreated
-  //   };
-  // }, []);
-
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
 
