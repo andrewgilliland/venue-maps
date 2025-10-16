@@ -8,6 +8,161 @@ export default function CustomImageMap() {
   const map = useRef<Map | null>(null);
   const hoverPopup = useRef<Popup | null>(null);
 
+  // 🪑 4. Add seating sections data
+  const seatingData = {
+    type: "FeatureCollection" as const,
+    features: [
+      // Home plate sections (behind home plate)
+      {
+        type: "Feature" as const,
+        properties: {
+          section: "Section 101",
+          capacity: 24,
+          price: "$45",
+          tier: "Field Level",
+          seatsSold: 22,
+          revenue: 990, // 22 * $45
+          salesPercentage: 91.7, // (22/24) * 100
+        },
+        geometry: {
+          type: "Polygon" as const,
+          coordinates: [
+            [
+              [-0.3, -0.8], // bottom-left
+              [-0.1, -0.8], // bottom-right
+              [-0.1, -0.55], // top-right
+              [-0.25, -0.4], // top-left
+              [-0.25, -0.8], // close polygon
+            ],
+          ],
+        },
+      },
+      {
+        type: "Feature" as const,
+        properties: {
+          section: "Section 102",
+          capacity: 24,
+          price: "$45",
+          tier: "Field Level",
+          seatsSold: 24,
+          revenue: 1080, // 24 * $45
+          salesPercentage: 100, // (24/24) * 100
+        },
+        geometry: {
+          type: "Polygon" as const,
+          coordinates: [
+            [
+              [-0.1, -0.8], // Bottom Left corner
+              [0.1, -0.8], // Bottom Right corner
+              [0.1, -0.675], // Top Right corner
+              [-0.1, -0.675], // Top Left corner
+              [-0.1, -0.8], // Close polygon
+            ],
+          ],
+        },
+      },
+      {
+        type: "Feature" as const,
+        properties: {
+          section: "Section 103",
+          capacity: 24,
+          price: "$45",
+          tier: "Field Level",
+          seatsSold: 18,
+          revenue: 810, // 18 * $45
+          salesPercentage: 75, // (18/24) * 100
+        },
+        geometry: {
+          type: "Polygon" as const,
+          coordinates: [
+            [
+              [0.1, -0.8],
+              [0.25, -0.8],
+              [0.25, -0.4],
+              [0.1, -0.55],
+              [0.1, -0.8],
+            ],
+          ],
+        },
+      },
+      // First base side sections
+      {
+        type: "Feature" as const,
+        properties: {
+          section: "Section 201",
+          capacity: 32,
+          price: "$35",
+          tier: "Field Level",
+          seatsSold: 28,
+          revenue: 980, // 28 * $35
+          salesPercentage: 87.5, // (28/32) * 100
+        },
+        geometry: {
+          type: "Polygon" as const,
+          coordinates: [
+            [
+              [0.4, -0.4],
+              [0.7, -0.4], // Bottom Right corner
+              [0.7, -0.1], // Top Right corner
+              [0.55, -0.1], // Top Left corner
+              [0.25, -0.4], // Bottom Left corner
+            ],
+          ],
+        },
+      },
+      // Third base side sections
+      {
+        type: "Feature" as const,
+        properties: {
+          section: "Section 301",
+          capacity: 32,
+          price: "$35",
+          tier: "Field Level",
+          seatsSold: 15,
+          revenue: 525, // 15 * $35
+          salesPercentage: 46.9, // (15/32) * 100
+        },
+        geometry: {
+          type: "Polygon" as const,
+          coordinates: [
+            [
+              [-0.7, -0.4],
+              [-0.25, -0.4], // Bottom Right corner
+              [-0.55, -0.1], // Top Right corner
+              [-0.7, -0.1], // Top Left corner
+              [-0.7, -0.4], // Bottom Left corner
+            ],
+          ],
+        },
+      },
+      // Upper deck sections
+      {
+        type: "Feature" as const,
+        properties: {
+          section: "Section 401",
+          capacity: 40,
+          price: "$25",
+          tier: "Upper Level",
+          seatsSold: 35,
+          revenue: 875, // 35 * $25
+          salesPercentage: 87.5, // (35/40) * 100
+        },
+        geometry: {
+          type: "Polygon" as const,
+          coordinates: [
+            [
+              [-0.4, -0.9],
+              [0.4, -0.9],
+              [0.4, -0.85],
+              [-0.4, -0.85],
+              [-0.4, -0.9],
+            ],
+          ],
+        },
+      },
+    ],
+  };
+
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
 
@@ -24,6 +179,8 @@ export default function CustomImageMap() {
     });
 
     map.current.on("load", () => {
+      console.log("Map loaded, initial zoom:", map.current!.getZoom());
+
       const sourceName = "venue-image";
 
       // 🖼️ 2. Add your custom image source
@@ -59,161 +216,6 @@ export default function CustomImageMap() {
           "raster-fade-duration": 0,
         },
       });
-
-      // 🪑 4. Add seating sections data
-      const seatingData = {
-        type: "FeatureCollection" as const,
-        features: [
-          // Home plate sections (behind home plate)
-          {
-            type: "Feature" as const,
-            properties: {
-              section: "Section 101",
-              capacity: 24,
-              price: "$45",
-              tier: "Field Level",
-              seatsSold: 22,
-              revenue: 990, // 22 * $45
-              salesPercentage: 91.7, // (22/24) * 100
-            },
-            geometry: {
-              type: "Polygon" as const,
-              coordinates: [
-                [
-                  [-0.3, -0.8], // bottom-left
-                  [-0.1, -0.8], // bottom-right
-                  [-0.1, -0.55], // top-right
-                  [-0.25, -0.4], // top-left
-                  [-0.25, -0.8], // close polygon
-                ],
-              ],
-            },
-          },
-          {
-            type: "Feature" as const,
-            properties: {
-              section: "Section 102",
-              capacity: 24,
-              price: "$45",
-              tier: "Field Level",
-              seatsSold: 24,
-              revenue: 1080, // 24 * $45
-              salesPercentage: 100, // (24/24) * 100
-            },
-            geometry: {
-              type: "Polygon" as const,
-              coordinates: [
-                [
-                  [-0.1, -0.8], // Bottom Left corner
-                  [0.1, -0.8], // Bottom Right corner
-                  [0.1, -0.675], // Top Right corner
-                  [-0.1, -0.675], // Top Left corner
-                  [-0.1, -0.8], // Close polygon
-                ],
-              ],
-            },
-          },
-          {
-            type: "Feature" as const,
-            properties: {
-              section: "Section 103",
-              capacity: 24,
-              price: "$45",
-              tier: "Field Level",
-              seatsSold: 18,
-              revenue: 810, // 18 * $45
-              salesPercentage: 75, // (18/24) * 100
-            },
-            geometry: {
-              type: "Polygon" as const,
-              coordinates: [
-                [
-                  [0.1, -0.8],
-                  [0.25, -0.8],
-                  [0.25, -0.4],
-                  [0.1, -0.55],
-                  [0.1, -0.8],
-                ],
-              ],
-            },
-          },
-          // First base side sections
-          {
-            type: "Feature" as const,
-            properties: {
-              section: "Section 201",
-              capacity: 32,
-              price: "$35",
-              tier: "Field Level",
-              seatsSold: 28,
-              revenue: 980, // 28 * $35
-              salesPercentage: 87.5, // (28/32) * 100
-            },
-            geometry: {
-              type: "Polygon" as const,
-              coordinates: [
-                [
-                  [0.4, -0.4],
-                  [0.7, -0.4], // Bottom Right corner
-                  [0.7, -0.1], // Top Right corner
-                  [0.55, -0.1], // Top Left corner
-                  [0.25, -0.4], // Bottom Left corner
-                ],
-              ],
-            },
-          },
-          // Third base side sections
-          {
-            type: "Feature" as const,
-            properties: {
-              section: "Section 301",
-              capacity: 32,
-              price: "$35",
-              tier: "Field Level",
-              seatsSold: 15,
-              revenue: 525, // 15 * $35
-              salesPercentage: 46.9, // (15/32) * 100
-            },
-            geometry: {
-              type: "Polygon" as const,
-              coordinates: [
-                [
-                  [-0.7, -0.4],
-                  [-0.25, -0.4], // Bottom Right corner
-                  [-0.55, -0.1], // Top Right corner
-                  [-0.7, -0.1], // Top Left corner
-                  [-0.7, -0.4], // Bottom Left corner
-                ],
-              ],
-            },
-          },
-          // Upper deck sections
-          {
-            type: "Feature" as const,
-            properties: {
-              section: "Section 401",
-              capacity: 40,
-              price: "$25",
-              tier: "Upper Level",
-              seatsSold: 35,
-              revenue: 875, // 35 * $25
-              salesPercentage: 87.5, // (35/40) * 100
-            },
-            geometry: {
-              type: "Polygon" as const,
-              coordinates: [
-                [
-                  [-0.4, -0.9],
-                  [0.4, -0.9],
-                  [0.4, -0.85],
-                  [-0.4, -0.85],
-                  [-0.4, -0.9],
-                ],
-              ],
-            },
-          },
-        ],
-      };
 
       // 🗂️ 5. Add seating sections source
       map.current!.addSource("seating-sections", {
@@ -260,11 +262,13 @@ export default function CustomImageMap() {
         },
       });
 
-      // 🏷️ 8. Add section labels
+      // 🏷️ 8. Add section labels (visible at medium zoom)
       map.current!.addLayer({
         id: "seating-labels",
         type: "symbol",
         source: "seating-sections",
+        minzoom: 8, // Only show labels when zoomed in enough
+        maxzoom: 24,
         layout: {
           "text-field": ["get", "section"],
           "text-font": ["Open Sans Regular"],
@@ -278,7 +282,236 @@ export default function CustomImageMap() {
         },
       });
 
-      // 🖱️ 9. Add click interactions with sales data
+      // 💺 9. Add detailed seat data (only at high zoom levels)
+      const detailedSeatingData = {
+        type: "FeatureCollection" as const,
+        features: [
+          // Individual seat rows - only visible when very zoomed in
+          {
+            type: "Feature" as const,
+            properties: {
+              type: "seat-row",
+              section: "Section 101",
+              row: "A",
+              seats: "1-12",
+            },
+            geometry: {
+              type: "LineString" as const,
+              coordinates: [
+                [-0.29, -0.75],
+                [-0.11, -0.75],
+              ],
+            },
+          },
+          {
+            type: "Feature" as const,
+            properties: {
+              type: "seat-row",
+              section: "Section 101",
+              row: "B",
+              seats: "1-12",
+            },
+            geometry: {
+              type: "LineString" as const,
+              coordinates: [
+                [-0.29, -0.72],
+                [-0.11, -0.72],
+              ],
+            },
+          },
+          // Concession stands - visible at medium zoom
+          {
+            type: "Feature" as const,
+            properties: {
+              type: "concession",
+              name: "Hot Dogs & Beverages",
+              status: "Open",
+            },
+            geometry: {
+              type: "Point" as const,
+              coordinates: [-0.5, 0.3],
+            },
+          },
+          {
+            type: "Feature" as const,
+            properties: {
+              type: "concession",
+              name: "Pizza & Snacks",
+              status: "Open",
+            },
+            geometry: {
+              type: "Point" as const,
+              coordinates: [0.5, 0.3],
+            },
+          },
+          // Facilities - visible at low-medium zoom
+          {
+            type: "Feature" as const,
+            properties: {
+              type: "facility",
+              name: "Restrooms",
+              icon: "�",
+            },
+            geometry: {
+              type: "Point" as const,
+              coordinates: [-0.7, 0.5],
+            },
+          },
+          {
+            type: "Feature" as const,
+            properties: {
+              type: "facility",
+              name: "First Aid",
+              icon: "🏥",
+            },
+            geometry: {
+              type: "Point" as const,
+              coordinates: [0.7, 0.5],
+            },
+          },
+        ],
+      };
+
+      // Add detailed seating source
+      map.current!.addSource("detailed-features", {
+        type: "geojson",
+        data: detailedSeatingData,
+      });
+
+      // Add zoom change debugging
+      map.current!.on("zoom", () => {
+        console.log("Current zoom level:", map.current!.getZoom());
+      });
+
+      // 🧪 TEST: Add a simple test marker that should always be visible
+      map.current!.addSource("test-marker", {
+        type: "geojson",
+        data: {
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [0, 0.5], // Center-top of the image
+          },
+          properties: {
+            name: "TEST MARKER",
+          },
+        },
+      });
+
+      map.current!.addLayer({
+        id: "test-marker",
+        type: "circle",
+        source: "test-marker",
+        paint: {
+          "circle-radius": 10,
+          "circle-color": "#ff0000", // Bright red
+          "circle-stroke-width": 3,
+          "circle-stroke-color": "#ffffff",
+        },
+      });
+
+      // 🎯 10. Add facility markers (visible at zoom 6-15)
+      map.current!.addLayer({
+        id: "facilities",
+        type: "symbol",
+        source: "detailed-features",
+        minzoom: 6,
+        maxzoom: 15,
+        filter: ["==", ["get", "type"], "facility"],
+        layout: {
+          "text-field": ["concat", ["get", "icon"], " ", ["get", "name"]],
+          "text-font": ["Open Sans Regular"],
+          "text-size": 14,
+          "text-anchor": "center",
+          "text-offset": [0, 1],
+        },
+        paint: {
+          "text-color": "#2563eb",
+          "text-halo-color": "#ffffff",
+          "text-halo-width": 2,
+        },
+      });
+
+      // 🍕 11. Add concession stands (visible at zoom 8-16)
+      map.current!.addLayer({
+        id: "concessions",
+        type: "circle",
+        source: "detailed-features",
+        minzoom: 8,
+        maxzoom: 16,
+        filter: ["==", ["get", "type"], "concession"],
+        paint: {
+          "circle-radius": 8,
+          "circle-color": "#f59e0b",
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#ffffff",
+        },
+      });
+
+      // 🍕 12. Add concession labels (visible at zoom 10-16)
+      map.current!.addLayer({
+        id: "concession-labels",
+        type: "symbol",
+        source: "detailed-features",
+        minzoom: 10,
+        maxzoom: 16,
+        filter: ["==", ["get", "type"], "concession"],
+        layout: {
+          "text-field": ["get", "name"],
+          "text-font": ["Open Sans Regular"],
+          "text-size": 11,
+          "text-anchor": "top",
+          "text-offset": [0, 1],
+        },
+        paint: {
+          "text-color": "#f59e0b",
+          "text-halo-color": "#ffffff",
+          "text-halo-width": 1,
+        },
+      });
+
+      // 💺 13. Add individual seat rows (visible at zoom 12+)
+      map.current!.addLayer({
+        id: "seat-rows",
+        type: "line",
+        source: "detailed-features",
+        minzoom: 12,
+        filter: ["==", ["get", "type"], "seat-row"],
+        paint: {
+          "line-color": "#6b7280",
+          "line-width": 2,
+          "line-opacity": 0.8,
+        },
+      });
+
+      // 💺 14. Add seat row labels (visible at zoom 14+)
+      map.current!.addLayer({
+        id: "seat-row-labels",
+        type: "symbol",
+        source: "detailed-features",
+        minzoom: 14,
+        filter: ["==", ["get", "type"], "seat-row"],
+        layout: {
+          "text-field": [
+            "concat",
+            "Row ",
+            ["get", "row"],
+            " (",
+            ["get", "seats"],
+            ")",
+          ],
+          "text-font": ["Open Sans Regular"],
+          "text-size": 10,
+          "symbol-placement": "line",
+        },
+        paint: {
+          "text-color": "#374151",
+          "text-halo-color": "#ffffff",
+          "text-halo-width": 1,
+        },
+      });
+
+      // �🖱️ 15. Add click interactions with sales data
       map.current!.on("click", "seating-fill", (e) => {
         const properties = e.features![0].properties;
         const seatsAvailable = properties.capacity - properties.seatsSold;
