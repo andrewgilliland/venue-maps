@@ -1,4 +1,7 @@
 /* Custom popup styles for MapLibre GL */
+.maplibregl-ctrl {
+  display: none !important;
+}
 
 /* Remove default styling from hover popup */
 .custom-hover-popup .maplibregl-popup-content {
