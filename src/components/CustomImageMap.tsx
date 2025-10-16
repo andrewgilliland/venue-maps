@@ -3,12 +3,31 @@ import { Map, Popup, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./CustomImageMap.css";
 
+type SalesStatus =
+  | "🔥 Hot Seller!"
+  | "✅ Good Sales"
+  | "⚠️ Average Sales"
+  | "❄️ Slow Sales";
+
+type SectionProperties = {
+  section: string;
+  capacity: number;
+  price: string;
+  tier: string;
+  seatsSold: number;
+  revenue: number;
+  salesPercentage: number;
+};
+
 export default function CustomImageMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
   const hoverPopup = useRef<Popup | null>(null);
 
-  // 🪑 4. Add seating sections data
+  const sourceName = "venue-image";
+  const detailLayerName = "detailed-features";
+
+  // GeoJSON data for seating sections with sales data
   const seatingData = {
     type: "FeatureCollection" as const,
     features: [
@@ -163,6 +182,119 @@ export default function CustomImageMap() {
     ],
   };
 
+  // GeoJSON data for individual seats, concessions, and facilities
+  const detailedSeatingData = {
+    type: "FeatureCollection" as const,
+    features: [
+      // Individual seat rows - only visible when very zoomed in
+      {
+        type: "Feature" as const,
+        properties: {
+          type: "seat-row",
+          section: "Section 101",
+          row: "A",
+          seats: "1-12",
+        },
+        geometry: {
+          type: "LineString" as const,
+          coordinates: [
+            [-0.29, -0.75],
+            [-0.11, -0.75],
+          ],
+        },
+      },
+      {
+        type: "Feature" as const,
+        properties: {
+          type: "seat-row",
+          section: "Section 101",
+          row: "B",
+          seats: "1-12",
+        },
+        geometry: {
+          type: "LineString" as const,
+          coordinates: [
+            [-0.29, -0.72],
+            [-0.11, -0.72],
+          ],
+        },
+      },
+      // Concession stands - visible at medium zoom
+      {
+        type: "Feature" as const,
+        properties: {
+          type: "concession",
+          name: "Hot Dogs & Beverages",
+          status: "Open",
+        },
+        geometry: {
+          type: "Point" as const,
+          coordinates: [-0.5, 0.3],
+        },
+      },
+      {
+        type: "Feature" as const,
+        properties: {
+          type: "concession",
+          name: "Pizza & Snacks",
+          status: "Open",
+        },
+        geometry: {
+          type: "Point" as const,
+          coordinates: [0.5, 0.3],
+        },
+      },
+      // Facilities - visible at low-medium zoom
+      {
+        type: "Feature" as const,
+        properties: {
+          type: "facility",
+          name: "Restrooms",
+          icon: "�",
+        },
+        geometry: {
+          type: "Point" as const,
+          coordinates: [-0.7, 0.5],
+        },
+      },
+      {
+        type: "Feature" as const,
+        properties: {
+          type: "facility",
+          name: "First Aid",
+          icon: "🏥",
+        },
+        geometry: {
+          type: "Point" as const,
+          coordinates: [0.7, 0.5],
+        },
+      },
+    ],
+  };
+
+  const sectionPopover: (
+    properties: SectionProperties,
+    seatsAvailable: number,
+    salesStatus: SalesStatus
+  ) => string = (properties, seatsAvailable, salesStatus) =>
+    `
+            <div class="p-4 min-w-[240px] bg-white rounded-lg shadow-2xl border border-gray-200">
+              <h3 class="font-bold text-lg mb-3 text-gray-900">${properties.section}</h3>
+              <div class="space-y-2 text-sm">
+                <p class="text-gray-700"><strong>Tier:</strong> ${properties.tier}</p>
+                <p class="text-gray-700"><strong>Price:</strong> ${properties.price}</p>
+                <hr class="my-3 border-gray-300">
+                <p class="text-gray-700"><strong>Capacity:</strong> ${properties.capacity} seats</p>
+                <p class="text-gray-700"><strong>Sold:</strong> ${properties.seatsSold} seats</p>
+                <p class="text-gray-700"><strong>Available:</strong> ${seatsAvailable} seats</p>
+                <p class="text-gray-700"><strong>Sales:</strong> ${properties.salesPercentage}%</p>
+                <p class="text-gray-700"><strong>Revenue:</strong> $${properties.revenue}</p>
+                <hr class="my-3 border-gray-300">
+                <p class="font-semibold text-gray-900">${salesStatus}</p>
+              </div>
+            </div>
+          `;
+
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
 
@@ -180,8 +312,6 @@ export default function CustomImageMap() {
 
     map.current.on("load", () => {
       console.log("Map loaded, initial zoom:", map.current!.getZoom());
-
-      const sourceName = "venue-image";
 
       // 🖼️ 2. Add your custom image source
       map.current!.addSource(sourceName, {
@@ -271,109 +401,21 @@ export default function CustomImageMap() {
         maxzoom: 24,
         layout: {
           "text-field": ["get", "section"],
-          "text-font": ["Open Sans Regular"],
-          "text-size": 12,
+          // Remove font specification - let MapLibre use default
+          "text-size": 14, // Increase size to make more visible
           "text-anchor": "center",
+          "text-allow-overlap": true, // Prevent labels from hiding due to collisions
+          "text-ignore-placement": false,
         },
         paint: {
           "text-color": "#ffffff",
           "text-halo-color": "#000000",
-          "text-halo-width": 1,
+          "text-halo-width": 2, // Increase halo for better visibility
         },
       });
 
-      // 💺 9. Add detailed seat data (only at high zoom levels)
-      const detailedSeatingData = {
-        type: "FeatureCollection" as const,
-        features: [
-          // Individual seat rows - only visible when very zoomed in
-          {
-            type: "Feature" as const,
-            properties: {
-              type: "seat-row",
-              section: "Section 101",
-              row: "A",
-              seats: "1-12",
-            },
-            geometry: {
-              type: "LineString" as const,
-              coordinates: [
-                [-0.29, -0.75],
-                [-0.11, -0.75],
-              ],
-            },
-          },
-          {
-            type: "Feature" as const,
-            properties: {
-              type: "seat-row",
-              section: "Section 101",
-              row: "B",
-              seats: "1-12",
-            },
-            geometry: {
-              type: "LineString" as const,
-              coordinates: [
-                [-0.29, -0.72],
-                [-0.11, -0.72],
-              ],
-            },
-          },
-          // Concession stands - visible at medium zoom
-          {
-            type: "Feature" as const,
-            properties: {
-              type: "concession",
-              name: "Hot Dogs & Beverages",
-              status: "Open",
-            },
-            geometry: {
-              type: "Point" as const,
-              coordinates: [-0.5, 0.3],
-            },
-          },
-          {
-            type: "Feature" as const,
-            properties: {
-              type: "concession",
-              name: "Pizza & Snacks",
-              status: "Open",
-            },
-            geometry: {
-              type: "Point" as const,
-              coordinates: [0.5, 0.3],
-            },
-          },
-          // Facilities - visible at low-medium zoom
-          {
-            type: "Feature" as const,
-            properties: {
-              type: "facility",
-              name: "Restrooms",
-              icon: "�",
-            },
-            geometry: {
-              type: "Point" as const,
-              coordinates: [-0.7, 0.5],
-            },
-          },
-          {
-            type: "Feature" as const,
-            properties: {
-              type: "facility",
-              name: "First Aid",
-              icon: "🏥",
-            },
-            geometry: {
-              type: "Point" as const,
-              coordinates: [0.7, 0.5],
-            },
-          },
-        ],
-      };
-
       // Add detailed seating source
-      map.current!.addSource("detailed-features", {
+      map.current!.addSource(detailLayerName, {
         type: "geojson",
         data: detailedSeatingData,
       });
@@ -404,7 +446,7 @@ export default function CustomImageMap() {
         source: "test-marker",
         paint: {
           "circle-radius": 10,
-          "circle-color": "#ff0000", // Bright red
+          "circle-color": "red", // Bright red
           "circle-stroke-width": 3,
           "circle-stroke-color": "#ffffff",
         },
@@ -414,16 +456,16 @@ export default function CustomImageMap() {
       map.current!.addLayer({
         id: "facilities",
         type: "symbol",
-        source: "detailed-features",
+        source: detailLayerName,
         minzoom: 6,
         maxzoom: 15,
         filter: ["==", ["get", "type"], "facility"],
         layout: {
           "text-field": ["concat", ["get", "icon"], " ", ["get", "name"]],
-          "text-font": ["Open Sans Regular"],
           "text-size": 14,
           "text-anchor": "center",
           "text-offset": [0, 1],
+          "text-allow-overlap": true,
         },
         paint: {
           "text-color": "#2563eb",
@@ -436,13 +478,13 @@ export default function CustomImageMap() {
       map.current!.addLayer({
         id: "concessions",
         type: "circle",
-        source: "detailed-features",
+        source: detailLayerName,
         minzoom: 8,
         maxzoom: 16,
         filter: ["==", ["get", "type"], "concession"],
         paint: {
           "circle-radius": 8,
-          "circle-color": "#f59e0b",
+          "circle-color": "blue",
           "circle-stroke-width": 2,
           "circle-stroke-color": "#ffffff",
         },
@@ -452,16 +494,16 @@ export default function CustomImageMap() {
       map.current!.addLayer({
         id: "concession-labels",
         type: "symbol",
-        source: "detailed-features",
+        source: detailLayerName,
         minzoom: 10,
         maxzoom: 16,
         filter: ["==", ["get", "type"], "concession"],
         layout: {
           "text-field": ["get", "name"],
-          "text-font": ["Open Sans Regular"],
           "text-size": 11,
           "text-anchor": "top",
           "text-offset": [0, 1],
+          "text-allow-overlap": true,
         },
         paint: {
           "text-color": "#f59e0b",
@@ -470,12 +512,12 @@ export default function CustomImageMap() {
         },
       });
 
-      // 💺 13. Add individual seat rows (visible at zoom 12+)
+      // 💺 13. Add individual seat rows (visible at zoom 8+)
       map.current!.addLayer({
         id: "seat-rows",
         type: "line",
-        source: "detailed-features",
-        minzoom: 12,
+        source: detailLayerName,
+        minzoom: 8,
         filter: ["==", ["get", "type"], "seat-row"],
         paint: {
           "line-color": "#6b7280",
@@ -488,7 +530,7 @@ export default function CustomImageMap() {
       map.current!.addLayer({
         id: "seat-row-labels",
         type: "symbol",
-        source: "detailed-features",
+        source: detailLayerName,
         minzoom: 14,
         filter: ["==", ["get", "type"], "seat-row"],
         layout: {
@@ -500,9 +542,9 @@ export default function CustomImageMap() {
             ["get", "seats"],
             ")",
           ],
-          "text-font": ["Open Sans Regular"],
           "text-size": 10,
           "symbol-placement": "line",
+          "text-allow-overlap": true,
         },
         paint: {
           "text-color": "#374151",
@@ -513,7 +555,7 @@ export default function CustomImageMap() {
 
       // �🖱️ 15. Add click interactions with sales data
       map.current!.on("click", "seating-fill", (e) => {
-        const properties = e.features![0].properties;
+        const properties = e.features![0].properties as SectionProperties;
         const seatsAvailable = properties.capacity - properties.seatsSold;
         const salesStatus =
           properties.salesPercentage >= 90
@@ -528,25 +570,7 @@ export default function CustomImageMap() {
           className: "custom-click-popup",
         })
           .setLngLat(e.lngLat)
-          .setHTML(
-            `
-            <div class="p-4 min-w-[240px] bg-white rounded-lg shadow-2xl border border-gray-200">
-              <h3 class="font-bold text-lg mb-3 text-gray-900">${properties.section}</h3>
-              <div class="space-y-2 text-sm">
-                <p class="text-gray-700"><strong>Tier:</strong> ${properties.tier}</p>
-                <p class="text-gray-700"><strong>Price:</strong> ${properties.price}</p>
-                <hr class="my-3 border-gray-300">
-                <p class="text-gray-700"><strong>Capacity:</strong> ${properties.capacity} seats</p>
-                <p class="text-gray-700"><strong>Sold:</strong> ${properties.seatsSold} seats</p>
-                <p class="text-gray-700"><strong>Available:</strong> ${seatsAvailable} seats</p>
-                <p class="text-gray-700"><strong>Sales:</strong> ${properties.salesPercentage}%</p>
-                <p class="text-gray-700"><strong>Revenue:</strong> $${properties.revenue}</p>
-                <hr class="my-3 border-gray-300">
-                <p class="font-semibold text-gray-900">${salesStatus}</p>
-              </div>
-            </div>
-          `
-          )
+          .setHTML(sectionPopover(properties, seatsAvailable, salesStatus))
           .addTo(map.current!);
       });
 
