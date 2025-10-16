@@ -5,7 +5,7 @@ export type SalesStatus =
   | "❄️ Slow Sales";
 
 export type SectionProperties = {
-  section: string;
+  section: number;
   capacity: number;
   price: string;
   tier: string;

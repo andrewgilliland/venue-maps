@@ -23,7 +23,7 @@ export default function CustomImageMap() {
       {
         type: "Feature" as const,
         properties: {
-          section: "Section 101",
+          section: 101,
           capacity: 24,
           price: "$45",
           tier: "Field Level",
@@ -47,7 +47,7 @@ export default function CustomImageMap() {
       {
         type: "Feature" as const,
         properties: {
-          section: "Section 102",
+          section: 102,
           capacity: 24,
           price: "$45",
           tier: "Field Level",
@@ -71,7 +71,7 @@ export default function CustomImageMap() {
       {
         type: "Feature" as const,
         properties: {
-          section: "Section 103",
+          section: 103,
           capacity: 24,
           price: "$45",
           tier: "Field Level",
@@ -96,7 +96,7 @@ export default function CustomImageMap() {
       {
         type: "Feature" as const,
         properties: {
-          section: "Section 201",
+          section: 201,
           capacity: 32,
           price: "$35",
           tier: "Field Level",
@@ -121,7 +121,7 @@ export default function CustomImageMap() {
       {
         type: "Feature" as const,
         properties: {
-          section: "Section 301",
+          section: 301,
           capacity: 32,
           price: "$35",
           tier: "Field Level",
@@ -146,7 +146,7 @@ export default function CustomImageMap() {
       {
         type: "Feature" as const,
         properties: {
-          section: "Section 401",
+          section: 401,
           capacity: 40,
           price: "$25",
           tier: "Upper Level",
@@ -179,7 +179,7 @@ export default function CustomImageMap() {
         type: "Feature" as const,
         properties: {
           type: "seat-row",
-          section: "Section 101",
+          section: 101,
           row: "A",
           seats: "1-12",
         },
@@ -195,7 +195,7 @@ export default function CustomImageMap() {
         type: "Feature" as const,
         properties: {
           type: "seat-row",
-          section: "Section 101",
+          section: 101,
           row: "B",
           seats: "1-12",
         },
@@ -270,6 +270,7 @@ export default function CustomImageMap() {
         version: 8,
         sources: {},
         layers: [],
+        glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
       },
       center: [0, 0],
       zoom: 8, // Much higher zoom to see the image better
@@ -294,13 +295,13 @@ export default function CustomImageMap() {
         console.error("Map error:", e);
       });
 
-      map.current!.on("sourcedata", (e) => {
-        console.log("Source data event:", e);
+      // map.current!.on("sourcedata", (e) => {
+      //   console.log("Source data event:", e);
 
-        if (e.sourceId === imageSourceName && e.isSourceLoaded) {
-          console.log("Image source loaded successfully");
-        }
-      });
+      //   if (e.sourceId === imageSourceName && e.isSourceLoaded) {
+      //     console.log("Image source loaded successfully");
+      //   }
+      // });
 
       // 🧱 3. Add a raster layer to display it
       map.current!.addLayer({
@@ -373,9 +374,9 @@ export default function CustomImageMap() {
           "text-ignore-placement": false,
         },
         paint: {
-          "text-color": "#ffffff",
-          "text-halo-color": "#000000",
-          "text-halo-width": 2, // Increase halo for better visibility
+          "text-color": "#000000",
+          "text-halo-color": "#ffffff",
+          "text-halo-width": 1, // Increase halo for better visibility
         },
       });
 
