@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Map, Popup, Marker } from "maplibre-gl";
+import { Map, Popup, Marker, NavigationControl } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./CustomImageMap.css";
 import { renderSectionPopoverToString } from "./SectionPopover";
@@ -277,6 +277,9 @@ export default function CustomImageMap() {
       minZoom: 7,
       maxZoom: 10,
     });
+
+    // 🎮 Add built-in zoom controls
+    map.current.addControl(new NavigationControl(), "top-right");
 
     map.current.on("load", () => {
       console.log("Map loaded, initial zoom:", map.current!.getZoom());
@@ -608,13 +611,46 @@ export default function CustomImageMap() {
     };
   }, []);
 
+  // Custom zoom functions
+  const zoomIn = () => {
+    if (map.current) {
+      map.current.zoomIn();
+    }
+  };
+
+  const zoomOut = () => {
+    if (map.current) {
+      map.current.zoomOut();
+    }
+  };
+
   return (
     <div className="flex gap-4">
       {/* Map Container */}
-      <div
-        ref={mapContainer}
-        className="w-[650px] h-[650px] rounded-lg border border-gray-300"
-      />
+      <div className="relative">
+        <div
+          ref={mapContainer}
+          className="w-[650px] h-[650px] rounded-lg border border-gray-300"
+        />
+
+        {/* Custom Zoom Controls - Modern Dark Theme */}
+        <div className="absolute top-4 right-4 flex flex-col gap-2">
+          <button
+            onClick={zoomIn}
+            className="w-10 h-10 bg-gray-900 text-white rounded-lg shadow-lg hover:bg-gray-700 flex items-center justify-center text-xl font-bold transition-all duration-200 hover:scale-105"
+            title="Zoom In"
+          >
+            +
+          </button>
+          <button
+            onClick={zoomOut}
+            className="w-10 h-10 bg-gray-900 text-white rounded-lg shadow-lg hover:bg-gray-700 flex items-center justify-center text-xl font-bold transition-all duration-200 hover:scale-105"
+            title="Zoom Out"
+          >
+            −
+          </button>
+        </div>
+      </div>
 
       {/* Heat Map Legend */}
       <div className="w-[200px] p-4 bg-gray-50 rounded-lg border border-gray-300">
