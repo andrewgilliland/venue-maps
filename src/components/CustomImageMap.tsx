@@ -31,6 +31,15 @@ export default function CustomImageMap() {
     green: "#22c55e",
     darkGreen: "#16a34a",
     darkestGreen: "#15803d",
+    gray: {
+      100: "#f3f4f6",
+      200: "#e5e7eb",
+      300: "#d1d5db",
+      400: "#9ca3af",
+      500: "#6b7280",
+      600: "#4b5563",
+      700: "#374151",
+    },
   };
 
   // GeoJSON data for seating sections with sales data
@@ -53,7 +62,7 @@ export default function CustomImageMap() {
           type: "Polygon" as const,
           coordinates: [
             [
-              [-0.3, -0.8], // bottom-left
+              [-0.25, -0.8], // bottom-left
               [-0.1, -0.8], // bottom-right
               [-0.1, -0.55], // top-right
               [-0.25, -0.4], // top-left
@@ -126,7 +135,7 @@ export default function CustomImageMap() {
           type: "Polygon" as const,
           coordinates: [
             [
-              [0.4, -0.4],
+              [0.25, -0.4],
               [0.7, -0.4], // Bottom Right corner
               [0.7, -0.1], // Top Right corner
               [0.55, -0.1], // Top Left corner
@@ -363,7 +372,7 @@ export default function CustomImageMap() {
         type: "line",
         source: seatingLayerName,
         paint: {
-          "line-color": colors.black,
+          "line-color": colors.gray[600],
           "line-width": 2,
         },
       });
