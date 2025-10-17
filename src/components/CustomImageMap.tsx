@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Map, Popup, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import "./CustomImageMap.css";
 import { renderSectionPopoverToString } from "./SectionPopover";
 import type { SectionProperties } from "./SectionPopover";
 
@@ -24,6 +25,12 @@ export default function CustomImageMap() {
   const colors = {
     black: "#000000",
     white: "#ffffff",
+    red: "#ef4444",
+    orange: "#f97316",
+    yellow: "#eab308",
+    green: "#22c55e",
+    darkGreen: "#16a34a",
+    darkestGreen: "#15803d",
   };
 
   // GeoJSON data for seating sections with sales data
@@ -272,7 +279,7 @@ export default function CustomImageMap() {
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
 
-    // 🗺️ 1. Create map with a blank style
+    // Map with a blank style
     map.current = new Map({
       container: mapContainer.current,
       style: {
@@ -333,18 +340,18 @@ export default function CustomImageMap() {
             ["linear"],
             ["get", "salesPercentage"],
             // Heat map colors based on sales percentage
-            0,
-            "#ef4444", // Red - 0% sales (poor)
+            10,
+            colors.red, // Red -10% sales (poor)
             25,
-            "#f97316", // Orange - 25% sales
+            colors.orange, // Orange - 25% sales
             50,
-            "#eab308", // Yellow - 50% sales (average)
+            colors.yellow, // Yellow - 50% sales (average)
             75,
-            "#22c55e", // Green - 75% sales (good)
+            colors.green, // Green - 75% sales (good)
             90,
-            "#16a34a", // Dark green - 90% sales (excellent)
+            colors.darkGreen, // Dark green - 90% sales (excellent)
             100,
-            "#15803d", // Darkest green - 100% sold out
+            colors.darkestGreen, // Darkest green - 100% sold out
           ],
           "fill-opacity": 0.8, // Higher opacity for better heat map visibility
         },
@@ -356,7 +363,7 @@ export default function CustomImageMap() {
         type: "line",
         source: seatingLayerName,
         paint: {
-          "line-color": "#ffffff",
+          "line-color": colors.black,
           "line-width": 2,
         },
       });
