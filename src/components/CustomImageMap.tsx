@@ -15,6 +15,11 @@ export default function CustomImageMap() {
   const seatingLayerName = "seating-sections";
   const detailLayerName = "detailed-features";
 
+  const minZoom = 7;
+  const mediumZoom = 8;
+  const highZoom = 9;
+  const maxZoom = 10;
+
   // GeoJSON data for seating sections with sales data
   const seatingData = {
     type: "FeatureCollection" as const,
@@ -178,7 +183,7 @@ export default function CustomImageMap() {
       {
         type: "Feature" as const,
         properties: {
-          type: "seat-row",
+          type: "row",
           section: 101,
           row: "A",
           seats: "1-12",
@@ -186,7 +191,7 @@ export default function CustomImageMap() {
         geometry: {
           type: "LineString" as const,
           coordinates: [
-            [-0.29, -0.75],
+            [-0.24, -0.75],
             [-0.11, -0.75],
           ],
         },
@@ -194,7 +199,7 @@ export default function CustomImageMap() {
       {
         type: "Feature" as const,
         properties: {
-          type: "seat-row",
+          type: "row",
           section: 101,
           row: "B",
           seats: "1-12",
@@ -202,7 +207,7 @@ export default function CustomImageMap() {
         geometry: {
           type: "LineString" as const,
           coordinates: [
-            [-0.29, -0.72],
+            [-0.24, -0.72],
             [-0.11, -0.72],
           ],
         },
@@ -217,7 +222,7 @@ export default function CustomImageMap() {
         },
         geometry: {
           type: "Point" as const,
-          coordinates: [-0.5, 0.3],
+          coordinates: [-0.75, 0.3],
         },
       },
       {
@@ -229,7 +234,7 @@ export default function CustomImageMap() {
         },
         geometry: {
           type: "Point" as const,
-          coordinates: [0.5, 0.3],
+          coordinates: [0.75, 0.3],
         },
       },
       // Facilities - visible at low-medium zoom
@@ -238,7 +243,6 @@ export default function CustomImageMap() {
         properties: {
           type: "facility",
           name: "Restrooms",
-          icon: "�",
         },
         geometry: {
           type: "Point" as const,
@@ -250,7 +254,6 @@ export default function CustomImageMap() {
         properties: {
           type: "facility",
           name: "First Aid",
-          icon: "🏥",
         },
         geometry: {
           type: "Point" as const,
@@ -273,13 +276,10 @@ export default function CustomImageMap() {
         glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
       },
       center: [0, 0],
-      zoom: 8, // Much higher zoom to see the image better
-      minZoom: 7,
-      maxZoom: 10,
+      zoom: mediumZoom, // Much higher zoom to see the image better
+      minZoom: minZoom,
+      maxZoom: maxZoom,
     });
-
-    // 🎮 Add built-in zoom controls
-    map.current.addControl(new NavigationControl(), "top-right");
 
     map.current.on("load", () => {
       console.log("Map loaded, initial zoom:", map.current!.getZoom());
@@ -299,14 +299,6 @@ export default function CustomImageMap() {
       map.current!.on("error", (e) => {
         console.error("Map error:", e);
       });
-
-      // map.current!.on("sourcedata", (e) => {
-      //   console.log("Source data event:", e);
-
-      //   if (e.sourceId === imageSourceName && e.isSourceLoaded) {
-      //     console.log("Image source loaded successfully");
-      //   }
-      // });
 
       // 🧱 3. Add a raster layer to display it
       map.current!.addLayer({
@@ -363,13 +355,13 @@ export default function CustomImageMap() {
         },
       });
 
-      // 🏷️ 8. Add section labels (visible at medium zoom)
+      // 🏷️ Section labels
       map.current!.addLayer({
-        id: "seating-labels",
+        id: "section-labels",
         type: "symbol",
         source: seatingLayerName,
-        minzoom: 8, // Only show labels when zoomed in enough
-        maxzoom: 24,
+        minzoom: mediumZoom, // Only show labels when zoomed in enough
+        maxzoom: maxZoom,
         layout: {
           "text-field": ["get", "section"],
           // Remove font specification - let MapLibre use default
@@ -396,45 +388,33 @@ export default function CustomImageMap() {
         console.log("Current zoom level:", map.current!.getZoom());
       });
 
-      // 🧪 TEST: Add a simple test marker that should always be visible
-      map.current!.addSource("test-marker", {
-        type: "geojson",
-        data: {
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: [0, 0.5], // Center-top of the image
-          },
-          properties: {
-            name: "TEST MARKER",
-          },
-        },
-      });
-
       map.current!.addLayer({
-        id: "test-marker",
+        id: "facilities",
         type: "circle",
-        source: "test-marker",
+        source: detailLayerName,
+        minzoom: mediumZoom,
+        maxzoom: maxZoom,
+        filter: ["==", ["get", "type"], "facility"],
         paint: {
-          "circle-radius": 10,
-          "circle-color": "red", // Bright red
-          "circle-stroke-width": 3,
+          "circle-radius": 8,
+          "circle-color": "blue",
+          "circle-stroke-width": 2,
           "circle-stroke-color": "#ffffff",
         },
       });
 
-      // 🎯 10. Add facility markers (visible at zoom 6-15)
+      // 🎯 Facility labels
       map.current!.addLayer({
-        id: "facilities",
+        id: "facility-label",
         type: "symbol",
         source: detailLayerName,
-        minzoom: 6,
-        maxzoom: 15,
+        minzoom: mediumZoom,
+        maxzoom: maxZoom,
         filter: ["==", ["get", "type"], "facility"],
         layout: {
-          "text-field": ["concat", ["get", "icon"], " ", ["get", "name"]],
-          "text-size": 14,
-          "text-anchor": "center",
+          "text-field": ["get", "name"],
+          "text-size": 12,
+          "text-anchor": "top",
           "text-offset": [0, 1],
           "text-allow-overlap": true,
         },
@@ -445,29 +425,29 @@ export default function CustomImageMap() {
         },
       });
 
-      // 🍕 11. Add concession stands (visible at zoom 8-16)
+      // 🍕 Concession stands
       map.current!.addLayer({
         id: "concessions",
         type: "circle",
         source: detailLayerName,
-        minzoom: 8,
-        maxzoom: 16,
+        minzoom: mediumZoom,
+        maxzoom: maxZoom,
         filter: ["==", ["get", "type"], "concession"],
         paint: {
           "circle-radius": 8,
-          "circle-color": "blue",
+          "circle-color": "#ffffff",
           "circle-stroke-width": 2,
-          "circle-stroke-color": "#ffffff",
+          "circle-stroke-color": "#000000",
         },
       });
 
-      // 🍕 12. Add concession labels (visible at zoom 10-16)
+      // 🍕 Concession labels
       map.current!.addLayer({
         id: "concession-labels",
         type: "symbol",
         source: detailLayerName,
-        minzoom: 10,
-        maxzoom: 16,
+        minzoom: mediumZoom,
+        maxzoom: maxZoom,
         filter: ["==", ["get", "type"], "concession"],
         layout: {
           "text-field": ["get", "name"],
@@ -477,19 +457,19 @@ export default function CustomImageMap() {
           "text-allow-overlap": true,
         },
         paint: {
-          "text-color": "#f59e0b",
+          "text-color": "#000000",
           "text-halo-color": "#ffffff",
           "text-halo-width": 1,
         },
       });
 
-      // 💺 13. Add individual seat rows (visible at zoom 8+)
+      // Rows
       map.current!.addLayer({
-        id: "seat-rows",
+        id: "rows",
         type: "line",
         source: detailLayerName,
-        minzoom: 8,
-        filter: ["==", ["get", "type"], "seat-row"],
+        minzoom: highZoom,
+        filter: ["==", ["get", "type"], "row"],
         paint: {
           "line-color": "#6b7280",
           "line-width": 2,
@@ -497,13 +477,13 @@ export default function CustomImageMap() {
         },
       });
 
-      // 💺 14. Add seat row labels (visible at zoom 14+)
+      // Row labels
       map.current!.addLayer({
-        id: "seat-row-labels",
+        id: "row-labels",
         type: "symbol",
         source: detailLayerName,
-        minzoom: 14,
-        filter: ["==", ["get", "type"], "seat-row"],
+        minzoom: highZoom,
+        filter: ["==", ["get", "type"], "row"],
         layout: {
           "text-field": [
             "concat",
@@ -513,7 +493,7 @@ export default function CustomImageMap() {
             ["get", "seats"],
             ")",
           ],
-          "text-size": 10,
+          "text-size": 12,
           "symbol-placement": "line",
           "text-allow-overlap": true,
         },
@@ -524,7 +504,7 @@ export default function CustomImageMap() {
         },
       });
 
-      // �🖱️ 15. Add click interactions with sales data
+      // Click interactions with sales data
       map.current!.on("click", "seating-fill", (e) => {
         const properties = e.features![0].properties as SectionProperties;
         const seatsAvailable = properties.capacity - properties.seatsSold;
@@ -630,7 +610,7 @@ export default function CustomImageMap() {
       <div className="relative">
         <div
           ref={mapContainer}
-          className="w-[650px] h-[650px] rounded-lg border border-gray-300"
+          className="w-[650px] h-[650px] rounded-lg border border-gray-300 bg-white"
         />
 
         {/* Custom Zoom Controls - Modern Dark Theme */}
