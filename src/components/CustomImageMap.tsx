@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
-import { Map, Popup, Marker, NavigationControl } from "maplibre-gl";
+import { Map, Popup, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import "./CustomImageMap.css";
 import { renderSectionPopoverToString } from "./SectionPopover";
 import type { SectionProperties } from "./SectionPopover";
 
@@ -19,6 +18,13 @@ export default function CustomImageMap() {
   const mediumZoom = 8;
   const highZoom = 9;
   const maxZoom = 10;
+
+  const zoom = { min: 7, med: 8, high: 9, max: 10 };
+
+  const colors = {
+    black: "#000000",
+    white: "#ffffff",
+  };
 
   // GeoJSON data for seating sections with sales data
   const seatingData = {
@@ -371,8 +377,8 @@ export default function CustomImageMap() {
           "text-ignore-placement": false,
         },
         paint: {
-          "text-color": "#000000",
-          "text-halo-color": "#ffffff",
+          "text-color": colors.black,
+          "text-halo-color": colors.white,
           "text-halo-width": 1, // Increase halo for better visibility
         },
       });
@@ -397,9 +403,9 @@ export default function CustomImageMap() {
         filter: ["==", ["get", "type"], "facility"],
         paint: {
           "circle-radius": 8,
-          "circle-color": "blue",
+          "circle-color": colors.white,
           "circle-stroke-width": 2,
-          "circle-stroke-color": "#ffffff",
+          "circle-stroke-color": colors.black,
         },
       });
 
@@ -419,8 +425,8 @@ export default function CustomImageMap() {
           "text-allow-overlap": true,
         },
         paint: {
-          "text-color": "#2563eb",
-          "text-halo-color": "#ffffff",
+          "text-color": colors.black,
+          "text-halo-color": colors.white,
           "text-halo-width": 2,
         },
       });
@@ -435,9 +441,9 @@ export default function CustomImageMap() {
         filter: ["==", ["get", "type"], "concession"],
         paint: {
           "circle-radius": 8,
-          "circle-color": "#ffffff",
+          "circle-color": colors.white,
           "circle-stroke-width": 2,
-          "circle-stroke-color": "#000000",
+          "circle-stroke-color": colors.black,
         },
       });
 
@@ -457,8 +463,8 @@ export default function CustomImageMap() {
           "text-allow-overlap": true,
         },
         paint: {
-          "text-color": "#000000",
-          "text-halo-color": "#ffffff",
+          "text-color": colors.black,
+          "text-halo-color": colors.white,
           "text-halo-width": 1,
         },
       });
@@ -504,7 +510,7 @@ export default function CustomImageMap() {
         },
       });
 
-      // Click interactions with sales data
+      // lick interactions with sales data
       map.current!.on("click", "seating-fill", (e) => {
         const properties = e.features![0].properties as SectionProperties;
         const seatsAvailable = properties.capacity - properties.seatsSold;
@@ -610,7 +616,7 @@ export default function CustomImageMap() {
       <div className="relative">
         <div
           ref={mapContainer}
-          className="w-[650px] h-[650px] rounded-lg border border-gray-300 bg-white"
+          className="w-[660px] h-[660px] rounded-lg border border-gray-300 bg-white"
         />
 
         {/* Custom Zoom Controls - Modern Dark Theme */}
