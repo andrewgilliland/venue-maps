@@ -3,13 +3,15 @@ import { Map, Popup, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./CustomImageMap.css";
 import { renderSectionPopoverToString } from "./SectionPopover";
-import type { SectionProperties } from "./SectionPopover";
+import type { Section } from "./SectionPopover";
+import { seatingData, detailedSeatingData } from "./data";
 
 export default function CustomImageMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
   const hoverPopup = useRef<Popup | null>(null);
 
+  const imageUrl = "/notre-dame-stadium.webp"; // Path to your custom image
   // Define source names as constants
   const imageSourceName = "venue-image";
   const seatingLayerName = "seating-sections";
@@ -42,249 +44,6 @@ export default function CustomImageMap() {
     },
   };
 
-  // GeoJSON data for seating sections with sales data
-  const seatingData = {
-    type: "FeatureCollection" as const,
-    features: [
-      // Home plate sections (behind home plate)
-      {
-        type: "Feature" as const,
-        properties: {
-          section: 101,
-          capacity: 24,
-          price: "$45",
-          tier: "Field Level",
-          seatsSold: 22,
-          revenue: 990, // 22 * $45
-          salesPercentage: 91.7, // (22/24) * 100
-        },
-        geometry: {
-          type: "Polygon" as const,
-          coordinates: [
-            [
-              [-0.25, -0.8], // bottom-left
-              [-0.1, -0.8], // bottom-right
-              [-0.1, -0.55], // top-right
-              [-0.25, -0.4], // top-left
-              [-0.25, -0.8], // close polygon
-            ],
-          ],
-        },
-      },
-      {
-        type: "Feature" as const,
-        properties: {
-          section: 102,
-          capacity: 24,
-          price: "$45",
-          tier: "Field Level",
-          seatsSold: 24,
-          revenue: 1080, // 24 * $45
-          salesPercentage: 100, // (24/24) * 100
-        },
-        geometry: {
-          type: "Polygon" as const,
-          coordinates: [
-            [
-              [-0.1, -0.8], // Bottom Left corner
-              [0.1, -0.8], // Bottom Right corner
-              [0.1, -0.675], // Top Right corner
-              [-0.1, -0.675], // Top Left corner
-              [-0.1, -0.8], // Close polygon
-            ],
-          ],
-        },
-      },
-      {
-        type: "Feature" as const,
-        properties: {
-          section: 103,
-          capacity: 24,
-          price: "$45",
-          tier: "Field Level",
-          seatsSold: 18,
-          revenue: 810, // 18 * $45
-          salesPercentage: 75, // (18/24) * 100
-        },
-        geometry: {
-          type: "Polygon" as const,
-          coordinates: [
-            [
-              [0.1, -0.8],
-              [0.25, -0.8],
-              [0.25, -0.4],
-              [0.1, -0.55],
-              [0.1, -0.8],
-            ],
-          ],
-        },
-      },
-      // First base side sections
-      {
-        type: "Feature" as const,
-        properties: {
-          section: 201,
-          capacity: 32,
-          price: "$35",
-          tier: "Field Level",
-          seatsSold: 28,
-          revenue: 980, // 28 * $35
-          salesPercentage: 87.5, // (28/32) * 100
-        },
-        geometry: {
-          type: "Polygon" as const,
-          coordinates: [
-            [
-              [0.25, -0.4],
-              [0.7, -0.4], // Bottom Right corner
-              [0.7, -0.1], // Top Right corner
-              [0.55, -0.1], // Top Left corner
-              [0.25, -0.4], // Bottom Left corner
-            ],
-          ],
-        },
-      },
-      // Third base side sections
-      {
-        type: "Feature" as const,
-        properties: {
-          section: 301,
-          capacity: 32,
-          price: "$35",
-          tier: "Field Level",
-          seatsSold: 15,
-          revenue: 525, // 15 * $35
-          salesPercentage: 46.9, // (15/32) * 100
-        },
-        geometry: {
-          type: "Polygon" as const,
-          coordinates: [
-            [
-              [-0.7, -0.4],
-              [-0.25, -0.4], // Bottom Right corner
-              [-0.55, -0.1], // Top Right corner
-              [-0.7, -0.1], // Top Left corner
-              [-0.7, -0.4], // Bottom Left corner
-            ],
-          ],
-        },
-      },
-      // Upper deck sections
-      {
-        type: "Feature" as const,
-        properties: {
-          section: 401,
-          capacity: 40,
-          price: "$25",
-          tier: "Upper Level",
-          seatsSold: 35,
-          revenue: 875, // 35 * $25
-          salesPercentage: 87.5, // (35/40) * 100
-        },
-        geometry: {
-          type: "Polygon" as const,
-          coordinates: [
-            [
-              [-0.4, -0.9],
-              [0.4, -0.9],
-              [0.4, -0.85],
-              [-0.4, -0.85],
-              [-0.4, -0.9],
-            ],
-          ],
-        },
-      },
-    ],
-  };
-
-  // GeoJSON data for individual seats, concessions, and facilities
-  const detailedSeatingData = {
-    type: "FeatureCollection" as const,
-    features: [
-      // Individual seat rows - only visible when very zoomed in
-      {
-        type: "Feature" as const,
-        properties: {
-          type: "row",
-          section: 101,
-          row: "A",
-          seats: "1-12",
-        },
-        geometry: {
-          type: "LineString" as const,
-          coordinates: [
-            [-0.24, -0.75],
-            [-0.11, -0.75],
-          ],
-        },
-      },
-      {
-        type: "Feature" as const,
-        properties: {
-          type: "row",
-          section: 101,
-          row: "B",
-          seats: "1-12",
-        },
-        geometry: {
-          type: "LineString" as const,
-          coordinates: [
-            [-0.24, -0.72],
-            [-0.11, -0.72],
-          ],
-        },
-      },
-      // Concession stands - visible at medium zoom
-      {
-        type: "Feature" as const,
-        properties: {
-          type: "concession",
-          name: "Hot Dogs & Beverages",
-          status: "Open",
-        },
-        geometry: {
-          type: "Point" as const,
-          coordinates: [-0.75, 0.3],
-        },
-      },
-      {
-        type: "Feature" as const,
-        properties: {
-          type: "concession",
-          name: "Pizza & Snacks",
-          status: "Open",
-        },
-        geometry: {
-          type: "Point" as const,
-          coordinates: [0.75, 0.3],
-        },
-      },
-      // Facilities - visible at low-medium zoom
-      {
-        type: "Feature" as const,
-        properties: {
-          type: "facility",
-          name: "Restrooms",
-        },
-        geometry: {
-          type: "Point" as const,
-          coordinates: [-0.7, 0.5],
-        },
-      },
-      {
-        type: "Feature" as const,
-        properties: {
-          type: "facility",
-          name: "First Aid",
-        },
-        geometry: {
-          type: "Point" as const,
-          coordinates: [0.7, 0.5],
-        },
-      },
-    ],
-  };
-
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
 
@@ -306,10 +65,10 @@ export default function CustomImageMap() {
     map.current.on("load", () => {
       console.log("Map loaded, initial zoom:", map.current!.getZoom());
 
-      // 🖼️ 2. Add your custom image source
+      // Image source
       map.current!.addSource(imageSourceName, {
         type: "image",
-        url: "/baseball-field.png", // your custom image file from public folder
+        url: imageUrl, // your custom image file from public folder
         coordinates: [
           [-1, 1], // top-left
           [1, 1], // top-right
@@ -322,7 +81,7 @@ export default function CustomImageMap() {
         console.error("Map error:", e);
       });
 
-      // 🧱 3. Add a raster layer to display it
+      // Raster layer to display it
       map.current!.addLayer({
         id: "venue-image-layer",
         type: "raster",
@@ -332,13 +91,13 @@ export default function CustomImageMap() {
         },
       });
 
-      // 🗂️ 5. Add seating sections source
+      // Seating sections source
       map.current!.addSource(seatingLayerName, {
         type: "geojson",
         data: seatingData,
       });
 
-      // 🎨 6. Add seating sections heat map based on sales percentage
+      // Seating sections heat map based on sales percentage
       map.current!.addLayer({
         id: "seating-fill",
         type: "fill",
@@ -366,7 +125,7 @@ export default function CustomImageMap() {
         },
       });
 
-      // 🖼️ 7. Add seating sections outline
+      // Seating sections outline
       map.current!.addLayer({
         id: "seating-outline",
         type: "line",
@@ -377,7 +136,7 @@ export default function CustomImageMap() {
         },
       });
 
-      // 🏷️ Section labels
+      // Section labels
       map.current!.addLayer({
         id: "section-labels",
         type: "symbol",
@@ -387,7 +146,7 @@ export default function CustomImageMap() {
         layout: {
           "text-field": ["get", "section"],
           // Remove font specification - let MapLibre use default
-          "text-size": 14, // Increase size to make more visible
+          "text-size": 12, // Increase size to make more visible
           "text-anchor": "center",
           "text-allow-overlap": true, // Prevent labels from hiding due to collisions
           "text-ignore-placement": false,
@@ -528,7 +287,7 @@ export default function CustomImageMap() {
 
       // lick interactions with sales data
       map.current!.on("click", "seating-fill", (e) => {
-        const properties = e.features![0].properties as SectionProperties;
+        const properties = e.features![0].properties as Section;
         const seatsAvailable = properties.capacity - properties.seatsSold;
         const salesStatus =
           properties.salesPercentage >= 90
@@ -595,7 +354,7 @@ export default function CustomImageMap() {
         }
       });
 
-      // 📍 10. Add a marker on top
+      // 📍 Marker at center
       new Marker({ color: "#e63946" })
         .setLngLat([0, 0])
         .setPopup(new Popup().setText("Center of the field"))
