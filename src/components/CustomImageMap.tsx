@@ -22,13 +22,31 @@ export default function CustomImageMap() {
   const highZoom = 9;
   const maxZoom = 10;
 
-  const zoom = { min: 7, med: 8, high: 9, max: 10 };
-
   const colors = {
     black: "#000000",
     white: "#ffffff",
-    red: "#ef4444",
-    orange: "#f97316",
+    red: {
+      100: "#fee2e2",
+      200: "#fecaca",
+      300: "#fca5a5",
+      400: "#f87171",
+      500: "#ef4444",
+      600: "#dc2626",
+      700: "#b91c1c",
+      800: "#991b1b",
+      900: "#7f1d1d",
+    },
+    orange: {
+      100: "#ffedd5",
+      200: "#fed7aa",
+      300: "#fdba74",
+      400: "#fb923c",
+      500: "#f97316",
+      600: "#ea580c",
+      700: "#c2410c",
+      800: "#9a3412",
+      900: "#7c2d12",
+    },
     yellow: "#eab308",
     green: "#22c55e",
     darkGreen: "#16a34a",
@@ -109,17 +127,17 @@ export default function CustomImageMap() {
             ["get", "salesPercentage"],
             // Heat map colors based on sales percentage
             10,
-            colors.red, // Red -10% sales (poor)
+            colors.orange[100], // Red -10% sales (poor)
             25,
-            colors.orange, // Orange - 25% sales
+            colors.orange[200], // Orange - 25% sales
             50,
-            colors.yellow, // Yellow - 50% sales (average)
+            colors.orange[300], // Yellow - 50% sales (average)
             75,
-            colors.green, // Green - 75% sales (good)
+            colors.orange[500], // Green - 75% sales (good)
             90,
-            colors.darkGreen, // Dark green - 90% sales (excellent)
+            colors.orange[600], // Dark green - 90% sales (excellent)
             100,
-            colors.darkestGreen, // Darkest green - 100% sold out
+            colors.orange[700], // Darkest green - 100% sold out
           ],
           "fill-opacity": 0.8, // Higher opacity for better heat map visibility
         },
@@ -136,6 +154,19 @@ export default function CustomImageMap() {
         },
       });
 
+      // Hover outline layer (initially hidden)
+      map.current!.addLayer({
+        id: "seating-hover-outline",
+        type: "line",
+        source: seatingLayerName,
+        paint: {
+          "line-color": colors.black,
+          "line-width": 4,
+          "line-opacity": 0.8,
+        },
+        filter: ["==", "section", ""], // Initially hide all features
+      });
+
       // Section labels
       map.current!.addLayer({
         id: "section-labels",
@@ -146,7 +177,7 @@ export default function CustomImageMap() {
         layout: {
           "text-field": ["get", "section"],
           // Remove font specification - let MapLibre use default
-          "text-size": 12, // Increase size to make more visible
+          "text-size": 14, // Increase size to make more visible
           "text-anchor": "center",
           "text-allow-overlap": true, // Prevent labels from hiding due to collisions
           "text-ignore-placement": false,
@@ -320,6 +351,13 @@ export default function CustomImageMap() {
         // Get section info
         const properties = e.features![0].properties;
 
+        // Show hover outline for this section
+        map.current!.setFilter("seating-hover-outline", [
+          "==",
+          "section",
+          properties.section,
+        ]);
+
         // Remove existing hover popup if any
         if (hoverPopup.current) {
           hoverPopup.current.remove();
@@ -330,12 +368,12 @@ export default function CustomImageMap() {
           closeButton: false,
           closeOnClick: false,
           className: "custom-hover-popup",
-          offset: [0, -15], // Position slightly above cursor
+          offset: [0, -10], // Position slightly above cursor
         })
           .setLngLat(e.lngLat)
           .setHTML(
             `
-            <div class="p-3 text-center bg-gray-900 text-white rounded-lg shadow-xl border-0">
+            <div class="p-2 text-center bg-gray-900 text-white rounded-lg shadow-xl border-0">
               <div class="font-semibold text-sm">Section ${properties.section}</div>
             </div>
           `
@@ -346,6 +384,9 @@ export default function CustomImageMap() {
       map.current!.on("mouseleave", "seating-fill", () => {
         // Reset cursor
         map.current!.getCanvas().style.cursor = "";
+
+        // Hide hover outline
+        map.current!.setFilter("seating-hover-outline", ["==", "section", ""]);
 
         // Remove hover popup
         if (hoverPopup.current) {
