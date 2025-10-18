@@ -5,6 +5,8 @@ import "./CustomImageMap.css";
 import { renderSectionPopoverToString } from "./SectionPopover";
 import type { Section } from "./SectionPopover";
 import { seatingData, detailedSeatingData } from "./data";
+import { colors } from "./colors";
+import MapLegend from "./MapLegend";
 
 export default function CustomImageMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -21,46 +23,6 @@ export default function CustomImageMap() {
   const mediumZoom = 8;
   const highZoom = 9;
   const maxZoom = 10;
-
-  const colors = {
-    black: "#000000",
-    white: "#ffffff",
-    red: {
-      100: "#fee2e2",
-      200: "#fecaca",
-      300: "#fca5a5",
-      400: "#f87171",
-      500: "#ef4444",
-      600: "#dc2626",
-      700: "#b91c1c",
-      800: "#991b1b",
-      900: "#7f1d1d",
-    },
-    orange: {
-      100: "#ffedd5",
-      200: "#fed7aa",
-      300: "#fdba74",
-      400: "#fb923c",
-      500: "#f97316",
-      600: "#ea580c",
-      700: "#c2410c",
-      800: "#9a3412",
-      900: "#7c2d12",
-    },
-    yellow: "#eab308",
-    green: "#22c55e",
-    darkGreen: "#16a34a",
-    darkestGreen: "#15803d",
-    gray: {
-      100: "#f3f4f6",
-      200: "#e5e7eb",
-      300: "#d1d5db",
-      400: "#9ca3af",
-      500: "#6b7280",
-      600: "#4b5563",
-      700: "#374151",
-    },
-  };
 
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
@@ -454,53 +416,7 @@ export default function CustomImageMap() {
         </div>
       </div>
 
-      {/* Heat Map Legend */}
-      <div className="w-[200px] p-4 bg-gray-50 rounded-lg border border-gray-300">
-        <h3 className="font-bold text-lg mb-4">Sales Heat Map</h3>
-
-        {/* Legend Items */}
-        <div className="space-y-2 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-500 rounded"></div>
-            <span>0-25% - Poor Sales</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-orange-500 rounded"></div>
-            <span>25-50% - Below Average</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-            <span>50-75% - Average</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500 rounded"></div>
-            <span>75-90% - Good Sales</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-600 rounded"></div>
-            <span>90%+ - Excellent</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-800 rounded"></div>
-            <span>100% - Sold Out</span>
-          </div>
-        </div>
-
-        {/* Summary Stats */}
-        <hr className="my-4" />
-        <div className="text-sm space-y-1">
-          <p className="font-semibold">Quick Stats:</p>
-          <p>Total Capacity: 152 seats</p>
-          <p>Total Sold: 122 seats</p>
-          <p>Overall Sales: 80.3%</p>
-          <p>Total Revenue: $4,265</p>
-        </div>
-
-        <hr className="my-4" />
-        <p className="text-xs text-gray-600">
-          Click on any section for detailed information
-        </p>
-      </div>
+      <MapLegend />
     </div>
   );
 }
