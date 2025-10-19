@@ -7,6 +7,7 @@ import type { Section } from "./SectionPopover";
 import { seatingData, detailedSeatingData } from "./data";
 import { colors } from "./colors";
 import MapLegend from "./MapLegend";
+import SectionBuilderForm from "./SectionBuilderForm";
 
 export default function VenueMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -308,7 +309,17 @@ export default function VenueMap() {
           .addTo(map.current!);
       });
 
-      // 🖱️ Hover popup functionality
+      // �️ General map click handler for coordinate capture
+      // map.current!.on("click", (e) => {
+      //   // Only capture coordinates if not clicking on a section
+      //   if (!e.features || e.features.length === 0) {
+      //     const coords = e.lngLat;
+      //     setLng(coords.lng);
+      //     setLat(coords.lat);
+      //   }
+      // });
+
+      // �🖱️ Hover popup functionality
       map.current!.on("mouseenter", "seating-fill", (e) => {
         // Change cursor
         map.current!.getCanvas().style.cursor = "pointer";
@@ -441,6 +452,8 @@ export default function VenueMap() {
       </div>
 
       <MapLegend />
+
+      <SectionBuilderForm lngState={[lng, setLng]} latState={[lat, setLat]} />
     </div>
   );
 }
