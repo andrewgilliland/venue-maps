@@ -74,7 +74,6 @@ export const seatingData = {
         ],
       },
     },
-
     {
       type: "Feature" as const,
       properties: {
@@ -99,7 +98,6 @@ export const seatingData = {
         ],
       },
     },
-
     {
       type: "Feature" as const,
       properties: {
@@ -124,7 +122,6 @@ export const seatingData = {
         ],
       },
     },
-
     {
       type: "Feature" as const,
       properties: {

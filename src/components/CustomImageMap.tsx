@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Map, Popup, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./CustomImageMap.css";
@@ -8,10 +8,13 @@ import { seatingData, detailedSeatingData } from "./data";
 import { colors } from "./colors";
 import MapLegend from "./MapLegend";
 
-export default function CustomImageMap() {
+export default function VenueMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
   const hoverPopup = useRef<Popup | null>(null);
+
+  const [lat, setLat] = useState(0);
+  const [lng, setLng] = useState(0);
 
   const imageUrl = "/notre-dame-stadium.webp"; // Path to your custom image
   // Define source names as constants
@@ -112,7 +115,7 @@ export default function CustomImageMap() {
         source: seatingLayerName,
         paint: {
           "line-color": colors.gray[600],
-          "line-width": 2,
+          "line-width": 1,
         },
       });
 
@@ -357,7 +360,20 @@ export default function CustomImageMap() {
         }
       });
 
-      // 📍 Marker at center
+      // �️ Mouse move coordinates logging
+      map.current!.on("mousemove", (e) => {
+        const coords = e.lngLat;
+        console.log(
+          `Mouse coordinates: [${coords.lng.toFixed(6)}, ${coords.lat.toFixed(
+            6
+          )}]`
+        );
+
+        setLng(coords.lng);
+        setLat(coords.lat);
+      });
+
+      // Marker at center
       new Marker({ color: "#e63946" })
         .setLngLat([0, 0])
         .setPopup(new Popup().setText("Center of the field"))
@@ -413,6 +429,14 @@ export default function CustomImageMap() {
           >
             −
           </button>
+        </div>
+
+        {/* Coordinate Display */}
+        <div className="absolute bottom-4 left-4 bg-gray-900 text-white px-3 py-2 rounded-lg shadow-lg">
+          <div className="text-xs font-mono">
+            <div>X: {lng.toFixed(3)}</div>
+            <div>Y: {lat.toFixed(3)}</div>
+          </div>
         </div>
       </div>
 
