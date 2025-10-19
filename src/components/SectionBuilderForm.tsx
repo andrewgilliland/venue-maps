@@ -1,10 +1,14 @@
+type SectionBuilderFormProps = {
+  lngState: [number, React.Dispatch<React.SetStateAction<number>>];
+  latState: [number, React.Dispatch<React.SetStateAction<number>>];
+  coordinates: [number, number][];
+};
+
 export default function SectionBuilderForm({
   lngState,
   latState,
-}: {
-  lngState: [number, React.Dispatch<React.SetStateAction<number>>];
-  latState: [number, React.Dispatch<React.SetStateAction<number>>];
-}) {
+  coordinates,
+}: SectionBuilderFormProps) {
   const [lng, setLng] = lngState;
   const [lat, setLat] = latState;
 
@@ -71,6 +75,21 @@ export default function SectionBuilderForm({
             <br />
             Click anywhere on the map to capture coordinates. Values will
             automatically appear in the inputs above.
+          </div>
+
+          <div className="text-sm text-gray-300 bg-gray-800 p-2 rounded border overflow-y-auto">
+            {coordinates.length === 0 && (
+              <span className="text-gray-500">
+                No coordinates captured yet.
+              </span>
+            )}
+            <pre>
+              {coordinates.map(([x, y], index) => (
+                <div key={index}>
+                  [{x.toFixed(6)}, {y.toFixed(6)}],
+                </div>
+              ))}
+            </pre>
           </div>
         </div>
       </div>

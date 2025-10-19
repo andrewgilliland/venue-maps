@@ -16,6 +16,7 @@ export default function VenueMap() {
 
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
+  const [coordinates, setCoordinates] = useState<[number, number][]>([]);
 
   const imageUrl = "/notre-dame-stadium.webp"; // Path to your custom image
   // Define source names as constants
@@ -27,6 +28,10 @@ export default function VenueMap() {
   const mediumZoom = 8;
   const highZoom = 9;
   const maxZoom = 10;
+
+  const addPointToCoordinates = (x: number, y: number): void => {
+    setCoordinates((prev) => [...prev, [x, y]]);
+  };
 
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
@@ -283,41 +288,38 @@ export default function VenueMap() {
       });
 
       // lick interactions with sales data
-      map.current!.on("click", "seating-fill", (e) => {
-        const properties = e.features![0].properties as Section;
-        const seatsAvailable = properties.capacity - properties.seatsSold;
-        const salesStatus =
-          properties.salesPercentage >= 90
-            ? "🔥 Hot Seller!"
-            : properties.salesPercentage >= 75
-            ? "✅ Good Sales"
-            : properties.salesPercentage >= 50
-            ? "⚠️ Average Sales"
-            : "❄️ Slow Sales";
+      // map.current!.on("click", "seating-fill", (e) => {
+      //   const properties = e.features![0].properties as Section;
+      //   const seatsAvailable = properties.capacity - properties.seatsSold;
+      //   const salesStatus =
+      //     properties.salesPercentage >= 90
+      //       ? "🔥 Hot Seller!"
+      //       : properties.salesPercentage >= 75
+      //       ? "✅ Good Sales"
+      //       : properties.salesPercentage >= 50
+      //       ? "⚠️ Average Sales"
+      //       : "❄️ Slow Sales";
 
-        new Popup({
-          className: "custom-click-popup",
-        })
-          .setLngLat(e.lngLat)
-          .setHTML(
-            renderSectionPopoverToString(
-              properties,
-              seatsAvailable,
-              salesStatus
-            )
-          )
-          .addTo(map.current!);
-      });
+      //   new Popup({
+      //     className: "custom-click-popup",
+      //   })
+      //     .setLngLat(e.lngLat)
+      //     .setHTML(
+      //       renderSectionPopoverToString(
+      //         properties,
+      //         seatsAvailable,
+      //         salesStatus
+      //       )
+      //     )
+      //     .addTo(map.current!);
+      // });
 
       // �️ General map click handler for coordinate capture
-      // map.current!.on("click", (e) => {
-      //   // Only capture coordinates if not clicking on a section
-      //   if (!e.features || e.features.length === 0) {
-      //     const coords = e.lngLat;
-      //     setLng(coords.lng);
-      //     setLat(coords.lat);
-      //   }
-      // });
+      map.current!.on("click", (e) => {
+        const coords = e.lngLat;
+
+        addPointToCoordinates(coords.lng, coords.lat);
+      });
 
       // �🖱️ Hover popup functionality
       map.current!.on("mouseenter", "seating-fill", (e) => {
@@ -418,10 +420,11 @@ export default function VenueMap() {
   return (
     <div className="flex gap-4">
       {/* Map Container */}
+      <MapLegend />
       <div className="relative">
         <div
           ref={mapContainer}
-          className="w-[660px] h-[660px] rounded-lg border border-gray-300 bg-white"
+          className="w-[660px] h-[660px] rounded-lg border border-gray-300 bg-neutral-100"
         />
 
         {/* Custom Zoom Controls - Modern Dark Theme */}
@@ -451,9 +454,11 @@ export default function VenueMap() {
         </div>
       </div>
 
-      <MapLegend />
-
-      <SectionBuilderForm lngState={[lng, setLng]} latState={[lat, setLat]} />
+      <SectionBuilderForm
+        lngState={[lng, setLng]}
+        latState={[lat, setLat]}
+        coordinates={coordinates}
+      />
     </div>
   );
 }
