@@ -138,6 +138,8 @@ export default function SectionBuilderForm({
             GeoJSON Section
           </label>
           <textarea
+            readOnly
+            rows={10}
             className="text-md text-gray-300 bg-gray-800 p-2 rounded border min-h-32 overflow-y-auto w-full"
             value={geoJsonSection}
           />

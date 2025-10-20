@@ -8,9 +8,12 @@ import { detailedSeatingData } from "./data";
 import { colors } from "./colors";
 import MapLegend from "./MapLegend";
 import SectionBuilderForm from "./SectionBuilderForm";
-import sectionsData from "../../data/sections.json";
 
-export default function VenueMap() {
+export default function VenueMap({
+  sections,
+}: {
+  sections: GeoJSON.FeatureCollection;
+}) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
   const hoverPopup = useRef<Popup | null>(null);
@@ -87,7 +90,7 @@ export default function VenueMap() {
       // Seating sections source
       map.current!.addSource(seatingLayerName, {
         type: "geojson",
-        data: sectionsData as GeoJSON.FeatureCollection,
+        data: sections as GeoJSON.FeatureCollection,
       });
 
       // Seating sections heat map based on sales percentage
@@ -409,7 +412,7 @@ export default function VenueMap() {
       map.current?.remove();
       map.current = null;
     };
-  }, []);
+  }, [sections]);
 
   // Custom zoom functions
   const zoomIn = () => {
