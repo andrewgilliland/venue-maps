@@ -14,6 +14,31 @@ export default function SectionBuilderForm({
 }: SectionBuilderFormProps) {
   const [coordinates, setCoordinates] = coordinatesState;
 
+  const geoJsonSection = `
+   {
+      "type": "Feature",
+      "properties": {
+        "section": "123",
+        "capacity": 24,
+        "price": "$45",
+        "tier": "Field Level",
+        "seatsSold": 18,
+        "revenue": 810,
+        "salesPercentage": 75
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            ${coordinates
+              .map(([x, y]) => `[${x}, ${y}]`)
+              .join(",\n            ")}
+          ]
+        ]
+      }
+    },
+  `;
+
   return (
     <form className="w-[300px] p-4 bg-gray-900 rounded-lg border border-gray-700 h-[660px] overflow-y-auto">
       <h3 className="font-bold text-lg mb-4 text-white">Section Builder</h3>
@@ -95,9 +120,12 @@ export default function SectionBuilderForm({
               </div>
             ))}
           </div>
+          <label className="block text-sm font-medium text-gray-200 mb-1">
+            GeoJSON Section
+          </label>
           <textarea
             className="text-md text-gray-300 bg-gray-800 p-2 rounded border min-h-32 overflow-y-auto w-full"
-            value={coordinates.map(([x, y]) => `[${x}, ${y}]`).join(",\n")}
+            value={geoJsonSection}
           />
         </div>
         <div className="flex gap-2">
