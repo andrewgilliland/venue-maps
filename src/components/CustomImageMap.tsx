@@ -455,9 +455,9 @@ export default function VenueMap() {
       </div>
 
       <SectionBuilderForm
-        lngState={[lng, setLng]}
-        latState={[lat, setLat]}
-        coordinates={coordinates}
+        lng={lng}
+        lat={lat}
+        coordinatesState={[coordinates, setCoordinates]}
       />
     </div>
   );
