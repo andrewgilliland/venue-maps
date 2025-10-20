@@ -152,7 +152,7 @@ export default function VenueMap() {
         layout: {
           "text-field": ["get", "section"],
           // Remove font specification - let MapLibre use default
-          "text-size": 14, // Increase size to make more visible
+          "text-size": 12, // Increase size to make more visible
           "text-anchor": "center",
           "text-allow-overlap": true, // Prevent labels from hiding due to collisions
           "text-ignore-placement": false,

@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 type SectionBuilderFormProps = {
   lng: number;
   lat: number;
@@ -13,12 +15,12 @@ export default function SectionBuilderForm({
   coordinatesState,
 }: SectionBuilderFormProps) {
   const [coordinates, setCoordinates] = coordinatesState;
+  const [sectionName, setSectionName] = useState<string>("");
 
-  const geoJsonSection = `
-   {
+  const geoJsonSection = `{
       "type": "Feature",
       "properties": {
-        "section": "123",
+        "section": "${sectionName}",
         "capacity": 24,
         "price": "$45",
         "tier": "Field Level",
@@ -36,8 +38,7 @@ export default function SectionBuilderForm({
           ]
         ]
       }
-    },
-  `;
+    }`;
 
   return (
     <form className="w-[300px] p-4 bg-gray-900 rounded-lg border border-gray-700 h-[660px] overflow-y-auto">
@@ -81,6 +82,19 @@ export default function SectionBuilderForm({
         </div>
 
         <div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-200 mb-1">
+              Section Name
+            </label>
+            <input
+              type="text"
+              value={sectionName}
+              onChange={(e) => setSectionName(e.target.value)}
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter section name"
+            />
+          </div>
+
           <label className="block text-sm font-medium text-gray-200 mb-1">
             Mapped Coordinates
           </label>
@@ -140,7 +154,7 @@ export default function SectionBuilderForm({
 
           <button
             onClick={() => {
-              navigator.clipboard.writeText(`[${coordinates}]`);
+              navigator.clipboard.writeText(geoJsonSection);
             }}
             className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
           >
