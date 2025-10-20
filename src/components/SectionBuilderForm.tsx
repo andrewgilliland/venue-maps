@@ -37,10 +37,8 @@ export default function SectionBuilderForm({
             <input
               disabled
               type="number"
-              value={lng.toFixed(3)}
+              value={lng}
               className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Click on map to capture"
-              step="0.000001"
             />
           </div>
 
@@ -51,10 +49,8 @@ export default function SectionBuilderForm({
             <input
               disabled
               type="number"
-              value={lat.toFixed(3)}
+              value={lat}
               className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Click on map to capture"
-              step="0.000001"
             />
           </div>
         </div>
@@ -69,7 +65,7 @@ export default function SectionBuilderForm({
                 <input
                   disabled
                   type="number"
-                  value={x.toFixed(3)}
+                  value={x}
                   onChange={() => {
                     setCoordinates;
                   }}
@@ -80,7 +76,7 @@ export default function SectionBuilderForm({
                 <input
                   disabled
                   type="number"
-                  value={y.toFixed(3)}
+                  value={y}
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Click on map to capture"
                   step="0.001"
@@ -90,9 +86,7 @@ export default function SectionBuilderForm({
           </div>
           <textarea
             className="text-md text-gray-300 bg-gray-800 p-2 rounded border min-h-32 overflow-y-auto w-full"
-            value={coordinates
-              .map(([x, y]) => `[${x.toFixed(3)}, ${y.toFixed(3)}]`)
-              .join(",\n")}
+            value={coordinates.map(([x, y]) => `[${x}, ${y}]`).join(",\n")}
           />
         </div>
         <div className="flex gap-2">

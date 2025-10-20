@@ -322,7 +322,10 @@ export default function VenueMap() {
       map.current!.on("click", (e) => {
         const coords = e.lngLat;
 
-        addPointToCoordinates(coords.lng, coords.lat);
+        addPointToCoordinates(
+          Number(coords.lng.toFixed(3)),
+          Number(coords.lat.toFixed(3))
+        );
       });
 
       // �🖱️ Hover popup functionality
@@ -381,13 +384,13 @@ export default function VenueMap() {
       map.current!.on("mousemove", (e) => {
         const coords = e.lngLat;
         console.log(
-          `Mouse coordinates: [${coords.lng.toFixed(6)}, ${coords.lat.toFixed(
-            6
+          `Mouse coordinates: [${coords.lng.toFixed(3)}, ${coords.lat.toFixed(
+            3
           )}]`
         );
 
-        setLng(coords.lng);
-        setLat(coords.lat);
+        setLng(Number(coords.lng.toFixed(3)));
+        setLat(Number(coords.lat.toFixed(3)));
       });
 
       // Marker at center
@@ -452,8 +455,8 @@ export default function VenueMap() {
         {/* Coordinate Display */}
         <div className="absolute bottom-4 left-4 bg-gray-900 text-white px-3 py-2 rounded-lg shadow-lg">
           <div className="text-xs font-mono">
-            <div>X: {lng.toFixed(3)}</div>
-            <div>Y: {lat.toFixed(3)}</div>
+            <div>X: {lng}</div>
+            <div>Y: {lat}</div>
           </div>
         </div>
       </div>
