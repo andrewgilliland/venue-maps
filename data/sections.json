@@ -1,0 +1,212 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "section": "PS30",
+        "capacity": 24,
+        "price": "$45",
+        "tier": "Field Level",
+        "seatsSold": 22,
+        "revenue": 990,
+        "salesPercentage": 91.7
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-0.27, -0.256],
+            [-0.27, -0.325],
+            [-0.184, -0.325],
+            [-0.184, -0.256],
+            [-0.27, -0.256]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "section": "PS29",
+        "capacity": 24,
+        "price": "$45",
+        "tier": "Field Level",
+        "seatsSold": 24,
+        "revenue": 1080,
+        "salesPercentage": 100
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-0.177, -0.256],
+            [-0.177, -0.325],
+            [-0.09, -0.325],
+            [-0.09, -0.256],
+            [-0.177, -0.256]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "section": "PS28",
+        "capacity": 24,
+        "price": "$45",
+        "tier": "Field Level",
+        "seatsSold": 18,
+        "revenue": 810,
+        "salesPercentage": 75
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-0.08, -0.256],
+            [-0.08, -0.325],
+            [0.04, -0.325],
+            [0.04, -0.256],
+            [-0.08, -0.256]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "section": "PS27",
+        "capacity": 32,
+        "price": "$35",
+        "tier": "Field Level",
+        "seatsSold": 28,
+        "revenue": 980,
+        "salesPercentage": 87.5
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [0.046, -0.256],
+            [0.046, -0.325],
+            [0.135, -0.325],
+            [0.135, -0.256],
+            [0.046, -0.256]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "section": "PS26",
+        "capacity": 32,
+        "price": "$35",
+        "tier": "Field Level",
+        "seatsSold": 15,
+        "revenue": 525,
+        "salesPercentage": 46.9
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [0.14, -0.256],
+            [0.14, -0.325],
+            [0.23, -0.325],
+            [0.23, -0.256],
+            [0.14, -0.256]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "section": "26",
+        "capacity": 40,
+        "price": "$25",
+        "tier": "Upper Level",
+        "seatsSold": 35,
+        "revenue": 875,
+        "salesPercentage": 87.5
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [0.15, -0.325],
+            [0.15, -0.357],
+            [0.144, -0.357],
+            [0.144, -0.361],
+            [0.135, -0.361],
+            [0.135, -0.508],
+            [0.226, -0.508],
+            [0.226, -0.325],
+            [0.15, -0.325]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "section": "PS8",
+        "capacity": 40,
+        "price": "$25",
+        "tier": "Upper Level",
+        "seatsSold": 35,
+        "revenue": 875,
+        "salesPercentage": 87.5
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-0.267, 0.325],
+            [-0.267, 0.257],
+            [-0.185, 0.257],
+            [-0.185, 0.325],
+            [-0.267, 0.325]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "section": "25",
+        "capacity": 40,
+        "price": "$25",
+        "tier": "Upper Level",
+        "seatsSold": 35,
+        "revenue": 875,
+        "salesPercentage": 87.5
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [0.243, -0.256],
+            [0.243, -0.325],
+            [0.249, -0.325],
+            [0.249, -0.334],
+            [0.256, -0.334],
+            [0.256, -0.356],
+            [0.245, -0.356],
+            [0.245, -0.362],
+            [0.243, -0.362],
+            [0.235, -0.362],
+            [0.235, -0.51],
+            [0.33, -0.51],
+            [0.33, -0.325],
+            [0.339, -0.325],
+            [0.339, -0.256],
+            [0.243, -0.256]
+          ]
+        ]
+      }
+    }
+  ]
+}

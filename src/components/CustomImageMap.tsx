@@ -4,10 +4,11 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import "./CustomImageMap.css";
 import { renderSectionPopoverToString } from "./SectionPopover";
 import type { Section } from "./SectionPopover";
-import { seatingData, detailedSeatingData } from "./data";
+import { detailedSeatingData } from "./data";
 import { colors } from "./colors";
 import MapLegend from "./MapLegend";
 import SectionBuilderForm from "./SectionBuilderForm";
+import sectionsData from "../../data/sections.json";
 
 export default function VenueMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -86,7 +87,7 @@ export default function VenueMap() {
       // Seating sections source
       map.current!.addSource(seatingLayerName, {
         type: "geojson",
-        data: seatingData,
+        data: sectionsData as GeoJSON.FeatureCollection,
       });
 
       // Seating sections heat map based on sales percentage
@@ -349,12 +350,12 @@ export default function VenueMap() {
           closeButton: false,
           closeOnClick: false,
           className: "custom-hover-popup",
-          offset: [0, -10], // Position slightly above cursor
+          offset: [0, -5], // Position slightly above cursor
         })
           .setLngLat(e.lngLat)
           .setHTML(
             `
-            <div class="p-2 text-center bg-gray-900 text-white rounded-lg shadow-xl border-0">
+            <div class="px-2 py-1 text-center bg-gray-900 text-white rounded-lg shadow-xl border-0">
               <div class="font-semibold text-sm">Section ${properties.section}</div>
             </div>
           `
