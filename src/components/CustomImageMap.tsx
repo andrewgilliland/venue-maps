@@ -54,6 +54,9 @@ export default function VenueMap() {
     map.current.on("load", () => {
       console.log("Map loaded, initial zoom:", map.current!.getZoom());
 
+      // Set cursor to pointer for entire map
+      map.current!.getCanvas().style.cursor = "pointer";
+
       // Image source
       map.current!.addSource(imageSourceName, {
         type: "image",
@@ -361,7 +364,7 @@ export default function VenueMap() {
 
       map.current!.on("mouseleave", "seating-fill", () => {
         // Reset cursor
-        map.current!.getCanvas().style.cursor = "";
+        map.current!.getCanvas().style.cursor = "pointer";
 
         // Hide hover outline
         map.current!.setFilter("seating-hover-outline", ["==", "section", ""]);
