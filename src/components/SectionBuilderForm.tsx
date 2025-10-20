@@ -63,20 +63,31 @@ export default function SectionBuilderForm({
             {coordinates.map(([x, y], index) => (
               <div key={index} className="flex gap-2 mb-2">
                 <input
-                  disabled
                   type="number"
                   value={x}
-                  onChange={() => {
-                    setCoordinates;
+                  onChange={(e) => {
+                    const newX = Number(e.target.value);
+                    setCoordinates((prev) => {
+                      const updated = [...prev];
+                      updated[index] = [newX, updated[index][1]];
+                      return updated;
+                    });
                   }}
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Click on map to capture"
                   step="0.001"
                 />
                 <input
-                  disabled
                   type="number"
                   value={y}
+                  onChange={(e) => {
+                    const newY = Number(e.target.value);
+                    setCoordinates((prev) => {
+                      const updated = [...prev];
+                      updated[index] = [updated[index][0], newY];
+                      return updated;
+                    });
+                  }}
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Click on map to capture"
                   step="0.001"
