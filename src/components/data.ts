@@ -125,6 +125,58 @@ export const seatingData = {
     {
       type: "Feature" as const,
       properties: {
+        section: "26",
+        capacity: 40,
+        price: "$25",
+        tier: "Upper Level",
+        seatsSold: 35,
+        revenue: 875, // 35 * $25
+        salesPercentage: 87.5, // (35/40) * 100
+      },
+      geometry: {
+        type: "Polygon" as const,
+        coordinates: [
+          [
+            [0.15, -0.325],
+            [0.15, -0.357],
+            [0.144, -0.357],
+            [0.144, -0.361],
+            [0.135, -0.361],
+            [0.135, -0.508],
+            [0.226, -0.508],
+            [0.226, -0.325],
+            [0.15, -0.325],
+          ],
+        ],
+      },
+    },
+    {
+      type: "Feature" as const,
+      properties: {
+        section: "PS8",
+        capacity: 40,
+        price: "$25",
+        tier: "Upper Level",
+        seatsSold: 35,
+        revenue: 875, // 35 * $25
+        salesPercentage: 87.5, // (35/40) * 100
+      },
+      geometry: {
+        type: "Polygon" as const,
+        coordinates: [
+          [
+            [-0.267, 0.325],
+            [-0.267, 0.257],
+            [-0.185, 0.257],
+            [-0.185, 0.325],
+            [-0.267, 0.325],
+          ],
+        ],
+      },
+    },
+    {
+      type: "Feature" as const,
+      properties: {
         section: "25",
         capacity: 40,
         price: "$25",
