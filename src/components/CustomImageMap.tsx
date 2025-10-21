@@ -8,6 +8,7 @@ import { detailedSeatingData } from "./data";
 import { colors } from "./colors";
 import MapLegend from "./MapLegend";
 import SectionBuilderForm from "./SectionBuilderForm";
+import GeoJSONViewer from "./GeoJSONViewer";
 
 export default function VenueMap({
   sections,
@@ -429,8 +430,8 @@ export default function VenueMap({
 
   return (
     <div className="flex gap-4">
-      {/* Map Container */}
-      <MapLegend />
+      {/* <MapLegend /> */}
+      <GeoJSONViewer geoJsonData={sections} />
       <div className="relative">
         <div
           ref={mapContainer}
