@@ -15,6 +15,7 @@ function App() {
         const response = await fetch(apiEndpoint);
         const data = await response.json();
         setSections(data);
+        console.log("fetching");
       } catch (error) {
         console.error("Error fetching seating data:", error);
       }
