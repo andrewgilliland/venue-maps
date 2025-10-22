@@ -8,13 +8,14 @@ import { detailedSeatingData } from "./data";
 import { colors } from "./colors";
 // import MapLegend from "./MapLegend";
 import SectionBuilderForm from "./SectionBuilderForm";
-import GeoJSONViewer from "./GeoJSONViewer";
+import Section from "./SectionsViewer";
 
-export default function VenueMap({
-  sections,
-}: {
+type VenueMapProps = {
   sections: GeoJSON.FeatureCollection;
-}) {
+  setSections: React.Dispatch<React.SetStateAction<GeoJSON.FeatureCollection>>;
+};
+
+export default function VenueMap({ sections, setSections }: VenueMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
   const hoverPopup = useRef<Popup | null>(null);
@@ -57,8 +58,6 @@ export default function VenueMap({
     });
 
     map.current.on("load", () => {
-      console.log("Map loaded, initial zoom:", map.current!.getZoom());
-
       // Set cursor to pointer for entire map
       map.current!.getCanvas().style.cursor = "pointer";
 
@@ -172,11 +171,6 @@ export default function VenueMap({
       map.current!.addSource(detailLayerName, {
         type: "geojson",
         data: detailedSeatingData,
-      });
-
-      // Add zoom change debugging
-      map.current!.on("zoom", () => {
-        console.log("Current zoom level:", map.current!.getZoom());
       });
 
       map.current!.addLayer({
@@ -384,14 +378,9 @@ export default function VenueMap({
         }
       });
 
-      // �️ Mouse move coordinates logging
+      // Mouse move coordinates logging
       map.current!.on("mousemove", (e) => {
         const coords = e.lngLat;
-        console.log(
-          `Mouse coordinates: [${coords.lng.toFixed(3)}, ${coords.lat.toFixed(
-            3
-          )}]`
-        );
 
         setLng(Number(coords.lng.toFixed(3)));
         setLat(Number(coords.lat.toFixed(3)));
@@ -431,7 +420,7 @@ export default function VenueMap({
   return (
     <div className="flex gap-4">
       {/* <MapLegend /> */}
-      <GeoJSONViewer geoJsonData={sections} />
+      <Section sections={sections} setSections={setSections} />
       <div className="relative">
         <div
           ref={mapContainer}

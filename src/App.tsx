@@ -15,7 +15,6 @@ function App() {
         const response = await fetch(apiEndpoint);
         const data = await response.json();
         setSections(data);
-        console.log("fetching");
       } catch (error) {
         console.error("Error fetching seating data:", error);
       }
@@ -26,7 +25,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-neutral-950 p-4">
-      <VenueMap sections={sections} />
+      <VenueMap sections={sections} setSections={setSections} />
     </div>
   );
 }
