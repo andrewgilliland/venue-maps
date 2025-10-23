@@ -26,16 +26,6 @@ export default function SectionsViewer({
     console.log("GeoJSON Sections Data:", sections);
   }, [sections]);
 
-  const addNewSection = (newSection: GeoJSON.Feature) => {
-    setSections((prevSections) => {
-      console.log("Previous Features:", prevSections.features);
-
-      const updatedFeatures = [...prevSections.features, newSection];
-
-      return { ...prevSections, features: updatedFeatures };
-    });
-  };
-
   const newSection: GeoJSON.Feature = {
     type: "Feature",
     properties: {
@@ -51,6 +41,29 @@ export default function SectionsViewer({
       type: "Polygon",
       coordinates: [coordinates],
     },
+  };
+  const addSection = (newSection: GeoJSON.Feature) => {
+    setSections((prevSections) => {
+      console.log("Previous Features:", prevSections.features);
+
+      const updatedFeatures = [...prevSections.features, newSection];
+
+      return { ...prevSections, features: updatedFeatures };
+    });
+  };
+
+  const updateSection = (updatedSection: GeoJSON.Feature) => {
+    setSections((prevSections) => {
+      const updatedFeatures = prevSections.features.map((feature) =>
+        feature.properties &&
+        updatedSection.properties &&
+        feature.properties.section === updatedSection.properties.section
+          ? updatedSection
+          : feature
+      );
+
+      return { ...prevSections, features: updatedFeatures };
+    });
   };
 
   const returnGeoJSON = ({
@@ -72,7 +85,7 @@ export default function SectionsViewer({
     <div className="w-[300px] p-4 bg-gray-900 rounded-lg border border-gray-700 h-[660px] overflow-y-auto">
       <h3 className="font-bold text-lg mb-4 text-white">Section Viewer</h3>
 
-      <div className="border border-gray-400 rounded mb-2">
+      <div className="mb-2">
         <label className="block text-sm font-medium text-gray-200 mb-1">
           Section Name
         </label>
@@ -100,6 +113,7 @@ export default function SectionsViewer({
                     updated[index] = [newX, updated[index][1]];
                     return updated;
                   });
+                  updateSection({ ...newSection });
                 }}
                 className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 step="0.001"
@@ -114,6 +128,7 @@ export default function SectionsViewer({
                     updated[index] = [updated[index][0], newY];
                     return updated;
                   });
+                  updateSection({ ...newSection });
                 }}
                 className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 step="0.001"
@@ -124,7 +139,7 @@ export default function SectionsViewer({
 
         <button
           className="text-white border border-green-500 px-3 py-2 rounded mb-4 bg-green-600 hover:bg-green-700 transition-colors duration-200"
-          onClick={() => addNewSection({ ...newSection })}
+          onClick={() => addSection({ ...newSection })}
         >
           Add New Section
         </button>
@@ -154,7 +169,7 @@ export default function SectionsViewer({
         </button>
       </div>
 
-      <div className="border border-gray-50">
+      <div className="border-t border-gray-50 pt-4">
         <p className="text-gray-400">Type: {type}</p>
         <div className="mb-4">
           {features.length === 0 ? (
