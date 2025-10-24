@@ -38,7 +38,7 @@ export default function SectionCard({
   return (
     <div className="mb-4 border border-gray-700 rounded-lg p-4 bg-gray-900">
       <h4 className="font-semibold text-md text-white mb-2">
-        Section: {properties.section}
+        {properties.section}
       </h4>
       <div className="flex flex-col border border-gray-700 rounded p-2 bg-gray-800">
         <div className="flex justify-between items-center">
