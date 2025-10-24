@@ -12,14 +12,31 @@ export type SectionProperties = {
 
 type SectionCardProps = {
   feature: GeoJSON.Feature<GeoJSON.Geometry, SectionProperties>;
+  setSections: React.Dispatch<React.SetStateAction<GeoJSON.FeatureCollection>>;
 };
 
-export default function SectionCard({ feature }: SectionCardProps) {
+export default function SectionCard({
+  feature,
+  setSections,
+}: SectionCardProps) {
   const { properties, geometry } = feature;
   const [isOpen, setIsOpen] = useState(false);
 
+  const deleteSection = (sectionToDelete: GeoJSON.Feature) => {
+    setSections((prevSections) => {
+      const updatedFeatures = prevSections.features.filter(
+        (feature) =>
+          feature.properties &&
+          sectionToDelete.properties &&
+          feature.properties.section !== sectionToDelete.properties.section
+      );
+
+      return { ...prevSections, features: updatedFeatures };
+    });
+  };
+
   return (
-    <div className="mb-4">
+    <div className="mb-4 border border-gray-700 rounded-lg p-4 bg-gray-900">
       <h4 className="font-semibold text-md text-white mb-2">
         Section: {properties.section}
       </h4>
@@ -65,6 +82,15 @@ export default function SectionCard({ feature }: SectionCardProps) {
             ))}
         </div>
       </div>
+
+      <button
+        className="mt-4 w-full px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
+        onClick={() => {
+          deleteSection(feature);
+        }}
+      >
+        Delete Section
+      </button>
     </div>
   );
 }

@@ -185,6 +185,7 @@ export default function SectionsViewer({
                       SectionProperties
                     >
                   }
+                  setSections={setSections}
                 />
               ))}
             </>
