@@ -57,10 +57,10 @@ export default function SectionsViewer({
 
       <div className="space-y-4 mt-2">
         <div>
-          <div className="border-t border-gray-50 pt-4">
+          <div className="border-t-2 border-gray-800 pt-4">
             <p className="text-gray-400">Type: {type}</p>
             <p className="text-gray-400">Sections:</p>
-            <div className="mb-4">
+            <div className="mt-2">
               {features.length === 0 ? (
                 <p className="text-gray-400">No GeoJSON data available.</p>
               ) : (
@@ -70,7 +70,7 @@ export default function SectionsViewer({
                       key={index}
                       feature={
                         feature as GeoJSON.Feature<
-                          GeoJSON.Geometry,
+                          GeoJSON.Polygon,
                           SectionProperties
                         >
                       }
