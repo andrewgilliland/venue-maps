@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Map, Popup, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import "./CustomImageMap.css";
+import "../styles/CustomImageMap.css";
 // import { renderSectionPopoverToString } from "./SectionPopover";
 // import type { Section } from "./SectionPopover";
 import { detailedSeatingData } from "../data";
