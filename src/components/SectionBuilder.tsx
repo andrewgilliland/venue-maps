@@ -1,31 +1,23 @@
 import { useEffect, useState } from "react";
 
 type SectionBuilderProps = {
-  lng: number;
-  lat: number;
+  coordinates: [number, number][];
+  setCoordinates: React.Dispatch<React.SetStateAction<[number, number][]>>;
   sections: GeoJSON.FeatureCollection;
   setSections: React.Dispatch<React.SetStateAction<GeoJSON.FeatureCollection>>;
 };
 
 export default function SectionBuilder({
-  lng,
-  lat,
+  coordinates,
+  setCoordinates,
   sections,
   setSections,
 }: SectionBuilderProps) {
   // const { type, features } = sections;
 
   const [sectionName, setSectionName] = useState<string>("New Section");
-  const [coordinates, setCoordinates] = useState<[number, number][]>([
-    [0.5, 0.5],
-    [0.5, 0.75],
-    [0.75, 0.75],
-    [0.75, 0.5],
-    [0.5, 0.5],
-  ]);
 
   useEffect(() => {
-    // Log the sections data whenever it changes
     console.log("GeoJSON Sections Data:", sections);
   }, [sections]);
 
@@ -80,7 +72,7 @@ export default function SectionBuilder({
         automatically appear in the inputs below.
       </div>
 
-      <div className="mt-2">
+      {/* <div className="mt-2">
         <label className="block text-sm font-medium text-gray-200 mb-1">
           Current Coordinates
         </label>
@@ -110,7 +102,7 @@ export default function SectionBuilder({
             />
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* <div>
         <label className="block text-sm font-medium text-gray-200 mb-1">

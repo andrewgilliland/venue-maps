@@ -8,7 +8,7 @@ import { detailedSeatingData } from "../data";
 import { colors } from "../theme/colors";
 // import MapLegend from "./MapLegend";
 import SectionsViewer from "./SectionsViewer";
-import Section from "./SectionBuilder";
+import SectionBuilder from "./SectionBuilder";
 
 type VenueMapProps = {
   sections: GeoJSON.FeatureCollection;
@@ -420,11 +420,11 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   return (
     <div className="flex gap-4">
       {/* <MapLegend /> */}
-      <Section
+      <SectionBuilder
+        coordinates={coordinates}
+        setCoordinates={setCoordinates}
         sections={sections}
         setSections={setSections}
-        lng={lng}
-        lat={lat}
       />
       <div className="relative">
         <div
