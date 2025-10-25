@@ -33,7 +33,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   const minZoom = 7;
   const mediumZoom = 8;
   const highZoom = 9;
-  const maxZoom = 10;
+  const maxZoom = 12;
 
   const addPointToCoordinates = (x: number, y: number): void => {
     setCoordinates((prev) => [...prev, [x, y]]);

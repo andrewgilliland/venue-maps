@@ -13,9 +13,7 @@ export default function SectionBuilder({
   sections,
   setSections,
 }: SectionBuilderProps) {
-  // const { type, features } = sections;
-
-  const [sectionName, setSectionName] = useState<string>("New Section");
+  const [sectionName, setSectionName] = useState<string>("");
 
   useEffect(() => {
     console.log("GeoJSON Sections Data:", sections);
@@ -62,6 +60,10 @@ export default function SectionBuilder({
     });
   };
 
+  const deleteCoordinate = (index: number) => {
+    setCoordinates((prev) => prev.filter((_, i) => i !== index));
+  };
+
   return (
     <section className="w-[300px] p-4 bg-gray-900 rounded-lg border border-gray-700 h-[660px] overflow-y-auto">
       <h3 className="font-bold text-lg mb-4 text-white">Section Builder</h3>
@@ -72,78 +74,6 @@ export default function SectionBuilder({
         automatically appear in the inputs below.
       </div>
 
-      {/* <div className="mt-2">
-        <label className="block text-sm font-medium text-gray-200 mb-1">
-          Current Coordinates
-        </label>
-
-        <div className="flex gap-2">
-          <div>
-            <label className="block text-sm font-medium text-gray-200 mb-1">
-              X
-            </label>
-            <input
-              disabled
-              type="number"
-              value={lng}
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-200 mb-1">
-              Y
-            </label>
-            <input
-              disabled
-              type="number"
-              value={lat}
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-        </div>
-      </div> */}
-
-      {/* <div>
-        <label className="block text-sm font-medium text-gray-200 mb-1">
-          Mapped Coordinates
-        </label>
-        {coordinates.map(([x, y], index) => (
-          <div key={index} className="flex gap-2 mb-2">
-            <input
-              type="number"
-              value={x}
-              onChange={(e) => {
-                const newX = Number(e.target.value);
-                setCoordinates((prev) => {
-                  const updated = [...prev];
-                  updated[index] = [newX, updated[index][1]];
-                  return updated;
-                });
-              }}
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Click on map to capture"
-              step="0.001"
-            />
-            <input
-              type="number"
-              value={y}
-              onChange={(e) => {
-                const newY = Number(e.target.value);
-                setCoordinates((prev) => {
-                  const updated = [...prev];
-                  updated[index] = [updated[index][0], newY];
-                  return updated;
-                });
-              }}
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Click on map to capture"
-              step="0.001"
-            />
-          </div>
-        ))}
-      </div> */}
-
       <div className="mt-2">
         <label className="block text-sm font-medium text-gray-200 mb-1">
           Section Name
@@ -151,7 +81,17 @@ export default function SectionBuilder({
         <input
           type="text"
           value={sectionName}
-          onChange={(e) => setSectionName(e.target.value)}
+          onChange={(e) => {
+            const isUnique = !sections.features.some(
+              (feature) => feature.properties?.section === e.target.value
+            );
+
+            if (!isUnique) {
+              alert("Section name must be unique");
+              return;
+            }
+            setSectionName(e.target.value);
+          }}
           className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
           placeholder="Enter section name"
         />
@@ -192,13 +132,23 @@ export default function SectionBuilder({
                 className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 step="0.001"
               />
+              <button
+                className="text-red-500 hover:text-red-700 font-bold"
+                onClick={() => deleteCoordinate(index)}
+              >
+                &times;
+              </button>
             </div>
           ))}
         </div>
 
         <button
           className="text-white border border-green-500 px-3 py-2 rounded mb-4 bg-green-600 hover:bg-green-700 transition-colors duration-200"
-          onClick={() => addSection({ ...newSection })}
+          onClick={() => {
+            addSection({ ...newSection });
+            setSectionName("");
+            setCoordinates([]);
+          }}
         >
           Add New Section
         </button>
