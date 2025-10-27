@@ -19,9 +19,9 @@ export default function SectionBuilder({
 }: SectionBuilderProps) {
   const [sectionName, setSectionName] = useState<string>("");
 
-  useEffect(() => {
-    console.log("newSection Details:", newSection);
-  }, [newSection]);
+  // useEffect(() => {
+  //   console.log("newSection Details:", newSection);
+  // }, [newSection]);
 
   const addSection = (newSection: GeoJSON.Feature) => {
     setSections((prevSections) => {

@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { Map, Popup, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "../styles/CustomImageMap.css";
-// import { renderSectionPopoverToString } from "./SectionPopover";
-// import type { Section } from "./SectionPopover";
 import { detailedSeatingData } from "../data";
 import { colors } from "../theme/colors";
-// import MapLegend from "./MapLegend";
 import SectionsViewer from "./SectionsViewer";
 import SectionBuilder from "./SectionBuilder";
+// import { renderSectionPopoverToString } from "./SectionPopover";
+// import type { Section } from "./SectionPopover";
+// import MapLegend from "./MapLegend";
 
 type VenueMapProps = {
   sections: GeoJSON.FeatureCollection;
@@ -16,15 +16,25 @@ type VenueMapProps = {
 };
 
 export default function VenueMap({ sections, setSections }: VenueMapProps) {
+  const imageUrl = "/notre-dame-stadium.webp"; // Path to your custom image
+  // Define source names as constants
+  const imageSourceName = "venue-image";
+  const seatingLayerName = "seating-sections";
+  const newSectionLayerName = "new-section";
+  const detailLayerName = "detailed-features";
+
+  const minZoom = 7;
+  const mediumZoom = 8;
+  const highZoom = 9;
+  const maxZoom = 12;
+
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
   const hoverPopup = useRef<Popup | null>(null);
 
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
-  const [coordinates, setCoordinates] = useState<[number, number][]>([
-    [lat, lng],
-  ]);
+  const [coordinates, setCoordinates] = useState<[number, number][]>([]);
   const [newSection, setNewSection] = useState<GeoJSON.Feature>({
     type: "Feature",
     properties: {
@@ -47,25 +57,13 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
     features: [newSection],
   };
 
-  const imageUrl = "/notre-dame-stadium.webp"; // Path to your custom image
-  // Define source names as constants
-  const imageSourceName = "venue-image";
-  const seatingLayerName = "seating-sections";
-  const newSectionLayerName = "new-section";
-  const detailLayerName = "detailed-features";
-
-  const minZoom = 7;
-  const mediumZoom = 8;
-  const highZoom = 9;
-  const maxZoom = 12;
-
   const addPointToCoordinates = (x: number, y: number): void => {
     setCoordinates((prev) => [...prev, [x, y]]);
   };
 
   const updateNewSection = (
     updatedNewSection: GeoJSON.Feature,
-    coordinates: [number, number][]
+    coords: [number, number][]
   ) => {
     if (!updatedNewSection.properties) {
       updatedNewSection.properties = {};
@@ -75,8 +73,10 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       newSection.properties?.section || "New Section";
     updatedNewSection.geometry = {
       type: "Polygon",
-      coordinates: [[...coordinates, coordinates[0]]], // Close the polygon
+      coordinates: [[...coordinates, coords[0]]], // Close the polygon
     };
+
+    console.log("Updated newSection: ", updatedNewSection);
 
     setNewSection(updatedNewSection);
   };
@@ -379,12 +379,12 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       map.current!.on("click", (e) => {
         const coords = e.lngLat;
 
-        addPointToCoordinates(
-          Number(coords.lng.toFixed(3)),
-          Number(coords.lat.toFixed(3))
-        );
+        const x = Number(coords.lng.toFixed(3));
+        const y = Number(coords.lat.toFixed(3));
 
-        updateNewSection({ ...newSection }, coordinates);
+        addPointToCoordinates(x, y);
+
+        updateNewSection({ ...newSection }, [[x, y]]);
       });
 
       // �🖱️ Hover popup functionality
