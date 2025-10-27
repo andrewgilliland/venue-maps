@@ -32,6 +32,8 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   const map = useRef<Map | null>(null);
   const hoverPopup = useRef<Popup | null>(null);
 
+  // const [currentZoom, setCurrentZoom] = useState(mediumZoom);
+
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
   const [coordinates, setCoordinates] = useState<[number, number][]>([]);
@@ -76,9 +78,19 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       coordinates: [[...coordinates, coords[0]]], // Close the polygon
     };
 
-    console.log("Updated newSection: ", updatedNewSection);
-
     setNewSection(updatedNewSection);
+  };
+
+  const zoomIn = () => {
+    if (map.current) {
+      map.current.zoomIn();
+    }
+  };
+
+  const zoomOut = () => {
+    if (map.current) {
+      map.current.zoomOut();
+    }
   };
 
   useEffect(() => {
@@ -100,8 +112,8 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
     });
 
     map.current.on("load", () => {
-      // Set cursor to pointer for entire map
-      map.current!.getCanvas().style.cursor = "pointer";
+      // Set cursor to crosshair for entire map
+      map.current!.getCanvas().style.cursor = "crosshair";
 
       // Image source
       map.current!.addSource(imageSourceName, {
@@ -390,7 +402,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       // �🖱️ Hover popup functionality
       map.current!.on("mouseenter", "seating-fill", (e) => {
         // Change cursor
-        map.current!.getCanvas().style.cursor = "pointer";
+        map.current!.getCanvas().style.cursor = "crosshair";
 
         // Get section info
         const properties = e.features![0].properties;
@@ -427,7 +439,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
 
       map.current!.on("mouseleave", "seating-fill", () => {
         // Reset cursor
-        map.current!.getCanvas().style.cursor = "pointer";
+        map.current!.getCanvas().style.cursor = "crosshair";
 
         // Hide hover outline
         map.current!.setFilter("seating-hover-outline", ["==", "section", ""]);
@@ -464,19 +476,6 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       map.current = null;
     };
   }, [sections, newSection]);
-
-  // Custom zoom functions
-  const zoomIn = () => {
-    if (map.current) {
-      map.current.zoomIn();
-    }
-  };
-
-  const zoomOut = () => {
-    if (map.current) {
-      map.current.zoomOut();
-    }
-  };
 
   return (
     <div className="flex gap-4">
