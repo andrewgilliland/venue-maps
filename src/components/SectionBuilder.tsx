@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 
 type SectionBuilderProps = {
+  newSection: GeoJSON.Feature;
+  setNewSection: React.Dispatch<React.SetStateAction<GeoJSON.Feature>>;
   coordinates: [number, number][];
   setCoordinates: React.Dispatch<React.SetStateAction<[number, number][]>>;
   sections: GeoJSON.FeatureCollection;
@@ -8,6 +10,8 @@ type SectionBuilderProps = {
 };
 
 export default function SectionBuilder({
+  newSection,
+  setNewSection,
   coordinates,
   setCoordinates,
   sections,
@@ -16,25 +20,8 @@ export default function SectionBuilder({
   const [sectionName, setSectionName] = useState<string>("");
 
   useEffect(() => {
-    console.log("GeoJSON Sections Data:", sections);
-  }, [sections]);
-
-  const newSection: GeoJSON.Feature = {
-    type: "Feature",
-    properties: {
-      section: sectionName,
-      capacity: 50,
-      price: "$60",
-      tier: "Upper Level",
-      seatsSold: 20,
-      revenue: 1200,
-      salesPercentage: 40,
-    },
-    geometry: {
-      type: "Polygon",
-      coordinates: [coordinates],
-    },
-  };
+    console.log("newSection Details:", newSection);
+  }, [newSection]);
 
   const addSection = (newSection: GeoJSON.Feature) => {
     setSections((prevSections) => {
@@ -46,18 +33,23 @@ export default function SectionBuilder({
     });
   };
 
-  const updateSection = (updatedSection: GeoJSON.Feature) => {
-    setSections((prevSections) => {
-      const updatedFeatures = prevSections.features.map((feature) =>
-        feature.properties &&
-        updatedSection.properties &&
-        feature.properties.section === updatedSection.properties.section
-          ? updatedSection
-          : feature
-      );
+  const updateNewSection = (
+    updatedNewSection: GeoJSON.Feature,
+    coordinates: [number, number][]
+  ) => {
+    if (!updatedNewSection.properties) {
+      updatedNewSection.properties = {};
+    }
 
-      return { ...prevSections, features: updatedFeatures };
-    });
+    updatedNewSection.properties.section = sectionName;
+    updatedNewSection.geometry = {
+      type: "Polygon",
+      coordinates: [[...coordinates, coordinates[0]]], // Close the polygon
+    };
+
+    console.log("updatedNewSection: ", updatedNewSection);
+
+    setNewSection(updatedNewSection);
   };
 
   const deleteCoordinate = (index: number) => {
@@ -112,7 +104,7 @@ export default function SectionBuilder({
                     updated[index] = [newX, updated[index][1]];
                     return updated;
                   });
-                  updateSection({ ...newSection });
+                  updateNewSection({ ...newSection }, coordinates);
                 }}
                 className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 step="0.001"
@@ -127,7 +119,7 @@ export default function SectionBuilder({
                     updated[index] = [updated[index][0], newY];
                     return updated;
                   });
-                  updateSection({ ...newSection });
+                  updateNewSection({ ...newSection }, coordinates);
                 }}
                 className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 step="0.001"

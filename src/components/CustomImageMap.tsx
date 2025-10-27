@@ -22,12 +22,36 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
 
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
-  const [coordinates, setCoordinates] = useState<[number, number][]>([]);
+  const [coordinates, setCoordinates] = useState<[number, number][]>([
+    [lat, lng],
+  ]);
+  const [newSection, setNewSection] = useState<GeoJSON.Feature>({
+    type: "Feature",
+    properties: {
+      section: "New Section",
+      capacity: 50,
+      price: "$60",
+      tier: "Upper Level",
+      seatsSold: 20,
+      revenue: 1200,
+      salesPercentage: 40,
+    },
+    geometry: {
+      type: "Polygon",
+      coordinates: [coordinates],
+    },
+  });
+
+  const newGeoJson = {
+    type: "FeatureCollection",
+    features: [newSection],
+  };
 
   const imageUrl = "/notre-dame-stadium.webp"; // Path to your custom image
   // Define source names as constants
   const imageSourceName = "venue-image";
   const seatingLayerName = "seating-sections";
+  const newSectionLayerName = "new-section";
   const detailLayerName = "detailed-features";
 
   const minZoom = 7;
@@ -37,6 +61,24 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
 
   const addPointToCoordinates = (x: number, y: number): void => {
     setCoordinates((prev) => [...prev, [x, y]]);
+  };
+
+  const updateNewSection = (
+    updatedNewSection: GeoJSON.Feature,
+    coordinates: [number, number][]
+  ) => {
+    if (!updatedNewSection.properties) {
+      updatedNewSection.properties = {};
+    }
+
+    updatedNewSection.properties.section =
+      newSection.properties?.section || "New Section";
+    updatedNewSection.geometry = {
+      type: "Polygon",
+      coordinates: [[...coordinates, coordinates[0]]], // Close the polygon
+    };
+
+    setNewSection(updatedNewSection);
   };
 
   useEffect(() => {
@@ -118,6 +160,23 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
             colors.orange[700], // Darkest green - 100% sold out
           ],
           "fill-opacity": 0.8, // Higher opacity for better heat map visibility
+        },
+      });
+
+      // New section source
+      map.current!.addSource(newSectionLayerName, {
+        type: "geojson",
+        data: newGeoJson as GeoJSON.FeatureCollection,
+      });
+
+      // New section layer
+      map.current!.addLayer({
+        id: "new-section-fill",
+        type: "fill",
+        source: newSectionLayerName,
+        paint: {
+          "fill-color": colors.blue[500],
+          "fill-opacity": 0.5,
         },
       });
 
@@ -324,6 +383,8 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
           Number(coords.lng.toFixed(3)),
           Number(coords.lat.toFixed(3))
         );
+
+        updateNewSection({ ...newSection }, coordinates);
       });
 
       // �🖱️ Hover popup functionality
@@ -402,7 +463,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       map.current?.remove();
       map.current = null;
     };
-  }, [sections]);
+  }, [sections, newSection]);
 
   // Custom zoom functions
   const zoomIn = () => {
@@ -421,6 +482,8 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
     <div className="flex gap-4">
       {/* <MapLegend /> */}
       <SectionBuilder
+        newSection={newSection}
+        setNewSection={setNewSection}
         coordinates={coordinates}
         setCoordinates={setCoordinates}
         sections={sections}
