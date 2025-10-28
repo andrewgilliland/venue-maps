@@ -33,7 +33,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   const hoverPopup = useRef<Popup | null>(null);
 
   // const [currentZoom, setCurrentZoom] = useState(mediumZoom);
-
+  const [mapCenter, setMapCenter] = useState<[number, number]>([0, 0]);
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
   const [coordinates, setCoordinates] = useState<[number, number][]>([]);
@@ -105,7 +105,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
         layers: [],
         glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
       },
-      center: [0, 0],
+      center: mapCenter,
       zoom: mediumZoom, // Much higher zoom to see the image better
       minZoom: minZoom,
       maxZoom: maxZoom,
@@ -458,6 +458,23 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
         setLng(Number(coords.lng.toFixed(3)));
         setLat(Number(coords.lat.toFixed(3)));
       });
+
+      // Map center coordinates logging on pan
+      map.current!.on("moveend", () => {
+        const center = map.current!.getCenter();
+        console.log(
+          `🗺️ Map center after pan: [${center.lng.toFixed(
+            6
+          )}, ${center.lat.toFixed(6)}]`
+        );
+        setMapCenter([center.lng, center.lat]);
+      });
+
+      // Optional: Log during panning (more frequent, use sparingly)
+      // map.current!.on("move", () => {
+      //   const center = map.current!.getCenter();
+      //   console.log(`🔄 Map center while panning: [${center.lng.toFixed(6)}, ${center.lat.toFixed(6)}]`);
+      // });
 
       // Marker at center
       new Marker({ color: "#e63946" })
