@@ -32,7 +32,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   const map = useRef<Map | null>(null);
   const hoverPopup = useRef<Popup | null>(null);
 
-  // const [currentZoom, setCurrentZoom] = useState(mediumZoom);
+  const [mapZoom, setMapZoom] = useState(mediumZoom);
   const [mapCenter, setMapCenter] = useState<[number, number]>([0, 0]);
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
@@ -106,7 +106,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
         glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
       },
       center: mapCenter,
-      zoom: mediumZoom, // Much higher zoom to see the image better
+      zoom: mapZoom, // Much higher zoom to see the image better
       minZoom: minZoom,
       maxZoom: maxZoom,
     });
@@ -462,13 +462,27 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       // Map center coordinates logging on pan
       map.current!.on("moveend", () => {
         const center = map.current!.getCenter();
-        console.log(
-          `🗺️ Map center after pan: [${center.lng.toFixed(
-            6
-          )}, ${center.lat.toFixed(6)}]`
-        );
         setMapCenter([center.lng, center.lat]);
       });
+
+      // Zoom level logging
+      map.current!.on("zoomend", () => {
+        const zoomLevel = map.current!.getZoom();
+        console.log(`🔍 Zoom level after zoom: ${zoomLevel.toFixed(2)}`);
+        setMapZoom(zoomLevel);
+      });
+
+      // Optional: Log during zooming (more frequent, use sparingly)
+      // map.current!.on("zoom", () => {
+      //   const zoomLevel = map.current!.getZoom();
+      //   console.log(`🔄 Zoom level while zooming: ${zoomLevel.toFixed(2)}`);
+      // });
+
+      // Optional: Log zoom start and direction
+      // map.current!.on("zoomstart", () => {
+      //   const zoomLevel = map.current!.getZoom();
+      //   console.log(`🔍 Zoom started from level: ${zoomLevel.toFixed(2)}`);
+      // });
 
       // Optional: Log during panning (more frequent, use sparingly)
       // map.current!.on("move", () => {
