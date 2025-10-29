@@ -451,7 +451,6 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
         }
       });
 
-      // Mouse move coordinates logging
       map.current!.on("mousemove", (e) => {
         const coords = e.lngLat;
 
@@ -459,36 +458,16 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
         setLat(Number(coords.lat.toFixed(3)));
       });
 
-      // Map center coordinates logging on pan
       map.current!.on("moveend", () => {
         const center = map.current!.getCenter();
         setMapCenter([center.lng, center.lat]);
       });
 
-      // Zoom level logging
       map.current!.on("zoomend", () => {
         const zoomLevel = map.current!.getZoom();
-        console.log(`🔍 Zoom level after zoom: ${zoomLevel.toFixed(2)}`);
+
         setMapZoom(zoomLevel);
       });
-
-      // Optional: Log during zooming (more frequent, use sparingly)
-      // map.current!.on("zoom", () => {
-      //   const zoomLevel = map.current!.getZoom();
-      //   console.log(`🔄 Zoom level while zooming: ${zoomLevel.toFixed(2)}`);
-      // });
-
-      // Optional: Log zoom start and direction
-      // map.current!.on("zoomstart", () => {
-      //   const zoomLevel = map.current!.getZoom();
-      //   console.log(`🔍 Zoom started from level: ${zoomLevel.toFixed(2)}`);
-      // });
-
-      // Optional: Log during panning (more frequent, use sparingly)
-      // map.current!.on("move", () => {
-      //   const center = map.current!.getCenter();
-      //   console.log(`🔄 Map center while panning: [${center.lng.toFixed(6)}, ${center.lat.toFixed(6)}]`);
-      // });
 
       // Marker at center
       new Marker({ color: "#e63946" })
