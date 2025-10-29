@@ -10,6 +10,23 @@ import SectionBuilder from "./SectionBuilder";
 // import type { Section } from "./SectionPopover";
 // import MapLegend from "./MapLegend";
 
+export const defaultSection: GeoJSON.Feature = {
+  type: "Feature",
+  properties: {
+    section: "",
+    capacity: 50,
+    price: "$60",
+    tier: "Upper Level",
+    seatsSold: 20,
+    revenue: 1200,
+    salesPercentage: 40,
+  },
+  geometry: {
+    type: "Polygon",
+    coordinates: [[]],
+  },
+};
+
 type VenueMapProps = {
   sections: GeoJSON.FeatureCollection;
   setSections: React.Dispatch<React.SetStateAction<GeoJSON.FeatureCollection>>;
@@ -37,22 +54,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
   const [coordinates, setCoordinates] = useState<[number, number][]>([]);
-  const [newSection, setNewSection] = useState<GeoJSON.Feature>({
-    type: "Feature",
-    properties: {
-      section: "New Section",
-      capacity: 50,
-      price: "$60",
-      tier: "Upper Level",
-      seatsSold: 20,
-      revenue: 1200,
-      salesPercentage: 40,
-    },
-    geometry: {
-      type: "Polygon",
-      coordinates: [coordinates],
-    },
-  });
+  const [newSection, setNewSection] = useState<GeoJSON.Feature>(defaultSection);
 
   const newGeoJson = {
     type: "FeatureCollection",
@@ -71,8 +73,6 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       updatedNewSection.properties = {};
     }
 
-    updatedNewSection.properties.section =
-      newSection.properties?.section || "New Section";
     updatedNewSection.geometry = {
       type: "Polygon",
       coordinates: [[...coordinates, coords[0]]], // Close the polygon
@@ -221,6 +221,27 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
         id: "section-labels",
         type: "symbol",
         source: seatingLayerName,
+        minzoom: mediumZoom, // Only show labels when zoomed in enough
+        maxzoom: maxZoom,
+        layout: {
+          "text-field": ["get", "section"],
+          // Remove font specification - let MapLibre use default
+          "text-size": 12, // Increase size to make more visible
+          "text-anchor": "center",
+          "text-allow-overlap": true, // Prevent labels from hiding due to collisions
+          "text-ignore-placement": false,
+        },
+        paint: {
+          "text-color": colors.black,
+          "text-halo-color": colors.white,
+          "text-halo-width": 1, // Increase halo for better visibility
+        },
+      });
+
+      map.current!.addLayer({
+        id: "new-section-label",
+        type: "symbol",
+        source: newSectionLayerName,
         minzoom: mediumZoom, // Only show labels when zoomed in enough
         maxzoom: maxZoom,
         layout: {
