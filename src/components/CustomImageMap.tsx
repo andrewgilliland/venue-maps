@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { Map, Popup, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "../styles/CustomImageMap.css";
-import { detailedSeatingData } from "../data";
 import { colors } from "../theme/colors";
 import SectionsViewer from "./SectionsViewer";
 import SectionBuilder from "./SectionBuilder";

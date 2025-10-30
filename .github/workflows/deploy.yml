@@ -1,0 +1,87 @@
+name: Deploy Venue Maps to AWS S3
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # Allow manual deployment
+
+env:
+  AWS_REGION: us-east-1
+  NODE_VERSION: 18
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📚 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 🔧 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run tests (optional)
+        run: npm test -- --run
+        continue-on-error: true
+
+      - name: 🏗️ Build React Vite app
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: 📊 Display build info
+        run: |
+          echo "Build completed successfully!"
+          ls -la dist/
+          du -sh dist/
+
+      - name: 🔑 Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: 🚀 Deploy to S3 bucket
+        run: |
+          echo "Deploying to S3 bucket: ${{ secrets.S3_BUCKET_NAME }}"
+          aws s3 sync ./dist/ s3://${{ secrets.S3_BUCKET_NAME }} \
+            --delete \
+            --cache-control "public,max-age=31536000" \
+            --exclude "*.html" \
+            --exclude "*.json"
+
+          # Set shorter cache for HTML and JSON files
+          aws s3 sync ./dist/ s3://${{ secrets.S3_BUCKET_NAME }} \
+            --cache-control "public,max-age=0,must-revalidate" \
+            --include "*.html" \
+            --include "*.json"
+
+      - name: 🌐 Set S3 bucket website configuration
+        run: |
+          aws s3 website s3://${{ secrets.S3_BUCKET_NAME }} \
+            --index-document index.html \
+            --error-document index.html
+
+      - name: ☁️ Invalidate CloudFront (if using CDN)
+        if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID != '' }}
+        run: |
+          echo "Invalidating CloudFront distribution: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}"
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+        continue-on-error: true
+
+      - name: ✅ Deployment successful
+        run: |
+          echo "🎉 Deployment completed successfully!"
+          echo "🌐 Website URL: http://${{ secrets.S3_BUCKET_NAME }}.s3-website-${{ env.AWS_REGION }}.amazonaws.com"
+          if [ -n "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" ]; then
+            echo "🚀 CloudFront URL: Available after propagation"
+          fi
