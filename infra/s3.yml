@@ -1,40 +1,139 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/awslabs/goformation/v5.2.9/schema/cloudformation.schema.json
+
+# yaml-language-server: $schema=https://raw.githubusercontent.com/awslabs/goformation/master/schema/cloudformation.schema.json
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "S3 bucket for venue-maps static website with CloudFront distribution"
+
 Parameters:
   MyBucketName:
+    Description: Name for the S3 bucket
     Type: String
-    Description: Enter the bucket name
-    Default: venue-maps-bucket-1234567890
+    Default: venue-maps-site
 
 Resources:
+  # Origin Access Identity for CloudFront
+  OriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: { "Fn::Sub": "Origin Access Identity for ${MyBucketName}" }
+
+  # S3 Bucket for website
   MyS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName:
-        Ref: MyBucketName
+        { "Fn::Sub": "${MyBucketName}-${AWS::AccountId}-${AWS::Region}" }
+      AccessControl: Private
       PublicAccessBlockConfiguration:
-        BlockPublicAcls: false
+        BlockPublicAcls: true
         BlockPublicPolicy: false
-        IgnorePublicAcls: false
+        IgnorePublicAcls: true
         RestrictPublicBuckets: false
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: error.html
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - GET
+              - HEAD
+            AllowedOrigins:
+              - "*"
+            MaxAge: 3000
+      VersioningConfiguration:
+        Status: Enabled
 
-  SampleBucketPolicy:
+  # S3 Bucket Policy
+  MyBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket:
-        Ref: MyS3Bucket
+      Bucket: { "Ref": "MyS3Bucket" }
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Sid: PublicReadGetObject
+          - Sid: AllowCloudFrontAccess
             Effect: Allow
-            Action:
-              - s3:GetObject
-            Resource:
-              Fn::Join:
-                - ""
-                - - "arn:aws:s3:::"
-                  - Ref: MyS3Bucket
-                  - "/*"
-            Principal: "*"
+            Principal:
+              AWS:
+                {
+                  "Fn::Sub": "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentity}",
+                }
+            Action: s3:GetObject
+            Resource: { "Fn::Sub": "${MyS3Bucket}/*" }
+
+  # CloudFront Distribution
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases: []
+        Comment: { "Fn::Sub": "CloudFront distribution for ${MyBucketName}" }
+        DefaultCacheBehavior:
+          TargetOriginId: { "Fn::Sub": "${MyBucketName}-origin" }
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD, OPTIONS]
+          CachedMethods: [GET, HEAD]
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          DefaultTTL: 86400
+          MaxTTL: 31536000
+          MinTTL: 0
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 300
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 300
+        DefaultRootObject: index.html
+        Enabled: true
+        HttpVersion: http2
+        IPV6Enabled: true
+        Origins:
+          - DomainName: { "Fn::GetAtt": ["MyS3Bucket", "RegionalDomainName"] }
+            Id: { "Fn::Sub": "${MyBucketName}-origin" }
+            S3OriginConfig:
+              OriginAccessIdentity:
+                {
+                  "Fn::Sub": "origin-access-identity/cloudfront/${OriginAccessIdentity}",
+                }
+        PriceClass: PriceClass_All
+
+Outputs:
+  BucketName:
+    Description: Name of the S3 bucket
+    Value: { "Ref": "MyS3Bucket" }
+    Export:
+      Name: { "Fn::Sub": "${AWS::StackName}-BucketName" }
+
+  CloudFrontDistributionId:
+    Description: CloudFront Distribution ID
+    Value: { "Ref": "CloudFrontDistribution" }
+    Export:
+      Name: { "Fn::Sub": "${AWS::StackName}-DistributionId" }
+
+  CloudFrontDomainName:
+    Description: CloudFront Distribution Domain Name
+    Value: { "Fn::GetAtt": ["CloudFrontDistribution", "DomainName"] }
+    Export:
+      Name: { "Fn::Sub": "${AWS::StackName}-DomainName" }
+
+  WebsiteURL:
+    Description: Website URL via CloudFront
+    Value: { "Fn::Sub": "https://${CloudFrontDistribution.DomainName}" }
+    Export:
+      Name: { "Fn::Sub": "${AWS::StackName}-WebsiteURL" }
+
+  S3BucketURL:
+    Description: S3 bucket URL (for deployment)
+    Value: { "Fn::Sub": "s3://${MyS3Bucket}" }
+    Export:
+      Name: { "Fn::Sub": "${AWS::StackName}-S3BucketURL" }
