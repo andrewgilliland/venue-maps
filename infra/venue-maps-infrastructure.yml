@@ -1,6 +1,3 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/awslabs/goformation/v5.2.9/schema/cloudformation.schema.json
-
-# yaml-language-server: $schema=https://raw.githubusercontent.com/awslabs/goformation/master/schema/cloudformation.schema.json
 AWSTemplateFormatVersion: "2010-09-09"
 Description: "S3 bucket for venue-maps static website with CloudFront distribution"
 
@@ -27,12 +24,12 @@ Resources:
       AccessControl: Private
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
-        BlockPublicPolicy: false
+        BlockPublicPolicy: true
         IgnorePublicAcls: true
-        RestrictPublicBuckets: false
+        RestrictPublicBuckets: true
       WebsiteConfiguration:
         IndexDocument: index.html
-        ErrorDocument: error.html
+        ErrorDocument: index.html
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders:
@@ -45,24 +42,6 @@ Resources:
             MaxAge: 3000
       VersioningConfiguration:
         Status: Enabled
-
-  # S3 Bucket Policy
-  MyBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: { "Ref": "MyS3Bucket" }
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Sid: AllowCloudFrontAccess
-            Effect: Allow
-            Principal:
-              AWS:
-                {
-                  "Fn::Sub": "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentity}",
-                }
-            Action: s3:GetObject
-            Resource: { "Fn::Sub": "${MyS3Bucket}/*" }
 
   # CloudFront Distribution
   CloudFrontDistribution:
