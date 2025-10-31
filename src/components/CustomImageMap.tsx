@@ -2,13 +2,29 @@ import { useEffect, useRef, useState } from "react";
 import { Map, Popup, Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "../styles/CustomImageMap.css";
-import { detailedSeatingData } from "../data";
 import { colors } from "../theme/colors";
 import SectionsViewer from "./SectionsViewer";
 import SectionBuilder from "./SectionBuilder";
 // import { renderSectionPopoverToString } from "./SectionPopover";
 // import type { Section } from "./SectionPopover";
 // import MapLegend from "./MapLegend";
+
+export const defaultSection: GeoJSON.Feature = {
+  type: "Feature",
+  properties: {
+    section: "",
+    capacity: 50,
+    price: "$60",
+    tier: "Upper Level",
+    seatsSold: 20,
+    revenue: 1200,
+    salesPercentage: 40,
+  },
+  geometry: {
+    type: "Polygon",
+    coordinates: [[]],
+  },
+};
 
 type VenueMapProps = {
   sections: GeoJSON.FeatureCollection;
@@ -37,22 +53,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
   const [coordinates, setCoordinates] = useState<[number, number][]>([]);
-  const [newSection, setNewSection] = useState<GeoJSON.Feature>({
-    type: "Feature",
-    properties: {
-      section: "New Section",
-      capacity: 50,
-      price: "$60",
-      tier: "Upper Level",
-      seatsSold: 20,
-      revenue: 1200,
-      salesPercentage: 40,
-    },
-    geometry: {
-      type: "Polygon",
-      coordinates: [coordinates],
-    },
-  });
+  const [newSection, setNewSection] = useState<GeoJSON.Feature>(defaultSection);
 
   const newGeoJson = {
     type: "FeatureCollection",
@@ -71,8 +72,6 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       updatedNewSection.properties = {};
     }
 
-    updatedNewSection.properties.section =
-      newSection.properties?.section || "New Section";
     updatedNewSection.geometry = {
       type: "Polygon",
       coordinates: [[...coordinates, coords[0]]], // Close the polygon
@@ -159,17 +158,17 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
             ["get", "salesPercentage"],
             // Heat map colors based on sales percentage
             10,
-            colors.orange[100], // Red -10% sales (poor)
+            colors.orange[100], // 10% sales (poor)
             25,
-            colors.orange[200], // Orange - 25% sales
+            colors.orange[200], //  25% sales
             50,
-            colors.orange[300], // Yellow - 50% sales (average)
+            colors.orange[300], //  50% sales (average)
             75,
-            colors.orange[500], // Green - 75% sales (good)
+            colors.orange[500], // 75% sales (good)
             90,
-            colors.orange[600], // Dark green - 90% sales (excellent)
+            colors.orange[600], // 90% sales (excellent)
             100,
-            colors.orange[700], // Darkest green - 100% sold out
+            colors.orange[700], // 100% sold out
           ],
           "fill-opacity": 0.8, // Higher opacity for better heat map visibility
         },
@@ -238,86 +237,107 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
         },
       });
 
-      // Add detailed seating source
-      map.current!.addSource(detailLayerName, {
-        type: "geojson",
-        data: detailedSeatingData,
-      });
-
       map.current!.addLayer({
-        id: "facilities",
-        type: "circle",
-        source: detailLayerName,
-        minzoom: mediumZoom,
+        id: "new-section-label",
+        type: "symbol",
+        source: newSectionLayerName,
+        minzoom: mediumZoom, // Only show labels when zoomed in enough
         maxzoom: maxZoom,
-        filter: ["==", ["get", "type"], "facility"],
+        layout: {
+          "text-field": ["get", "section"],
+          // Remove font specification - let MapLibre use default
+          "text-size": 12, // Increase size to make more visible
+          "text-anchor": "center",
+          "text-allow-overlap": true, // Prevent labels from hiding due to collisions
+          "text-ignore-placement": false,
+        },
         paint: {
-          "circle-radius": 8,
-          "circle-color": colors.white,
-          "circle-stroke-width": 2,
-          "circle-stroke-color": colors.black,
+          "text-color": colors.black,
+          "text-halo-color": colors.white,
+          "text-halo-width": 1, // Increase halo for better visibility
         },
       });
+
+      // Add detailed seating source
+      // map.current!.addSource(detailLayerName, {
+      //   type: "geojson",
+      //   data: detailedSeatingData,
+      // });
+
+      // map.current!.addLayer({
+      //   id: "facilities",
+      //   type: "circle",
+      //   source: detailLayerName,
+      //   minzoom: mediumZoom,
+      //   maxzoom: maxZoom,
+      //   filter: ["==", ["get", "type"], "facility"],
+      //   paint: {
+      //     "circle-radius": 8,
+      //     "circle-color": colors.white,
+      //     "circle-stroke-width": 2,
+      //     "circle-stroke-color": colors.black,
+      //   },
+      // });
 
       // 🎯 Facility labels
-      map.current!.addLayer({
-        id: "facility-label",
-        type: "symbol",
-        source: detailLayerName,
-        minzoom: mediumZoom,
-        maxzoom: maxZoom,
-        filter: ["==", ["get", "type"], "facility"],
-        layout: {
-          "text-field": ["get", "name"],
-          "text-size": 12,
-          "text-anchor": "top",
-          "text-offset": [0, 1],
-          "text-allow-overlap": true,
-        },
-        paint: {
-          "text-color": colors.black,
-          "text-halo-color": colors.white,
-          "text-halo-width": 2,
-        },
-      });
+      // map.current!.addLayer({
+      //   id: "facility-label",
+      //   type: "symbol",
+      //   source: detailLayerName,
+      //   minzoom: mediumZoom,
+      //   maxzoom: maxZoom,
+      //   filter: ["==", ["get", "type"], "facility"],
+      //   layout: {
+      //     "text-field": ["get", "name"],
+      //     "text-size": 12,
+      //     "text-anchor": "top",
+      //     "text-offset": [0, 1],
+      //     "text-allow-overlap": true,
+      //   },
+      //   paint: {
+      //     "text-color": colors.black,
+      //     "text-halo-color": colors.white,
+      //     "text-halo-width": 2,
+      //   },
+      // });
 
       // 🍕 Concession stands
-      map.current!.addLayer({
-        id: "concessions",
-        type: "circle",
-        source: detailLayerName,
-        minzoom: mediumZoom,
-        maxzoom: maxZoom,
-        filter: ["==", ["get", "type"], "concession"],
-        paint: {
-          "circle-radius": 8,
-          "circle-color": colors.white,
-          "circle-stroke-width": 2,
-          "circle-stroke-color": colors.black,
-        },
-      });
+      // map.current!.addLayer({
+      //   id: "concessions",
+      //   type: "circle",
+      //   source: detailLayerName,
+      //   minzoom: mediumZoom,
+      //   maxzoom: maxZoom,
+      //   filter: ["==", ["get", "type"], "concession"],
+      //   paint: {
+      //     "circle-radius": 8,
+      //     "circle-color": colors.white,
+      //     "circle-stroke-width": 2,
+      //     "circle-stroke-color": colors.black,
+      //   },
+      // });
 
       // 🍕 Concession labels
-      map.current!.addLayer({
-        id: "concession-labels",
-        type: "symbol",
-        source: detailLayerName,
-        minzoom: mediumZoom,
-        maxzoom: maxZoom,
-        filter: ["==", ["get", "type"], "concession"],
-        layout: {
-          "text-field": ["get", "name"],
-          "text-size": 11,
-          "text-anchor": "top",
-          "text-offset": [0, 1],
-          "text-allow-overlap": true,
-        },
-        paint: {
-          "text-color": colors.black,
-          "text-halo-color": colors.white,
-          "text-halo-width": 1,
-        },
-      });
+      // map.current!.addLayer({
+      //   id: "concession-labels",
+      //   type: "symbol",
+      //   source: detailLayerName,
+      //   minzoom: mediumZoom,
+      //   maxzoom: maxZoom,
+      //   filter: ["==", ["get", "type"], "concession"],
+      //   layout: {
+      //     "text-field": ["get", "name"],
+      //     "text-size": 11,
+      //     "text-anchor": "top",
+      //     "text-offset": [0, 1],
+      //     "text-allow-overlap": true,
+      //   },
+      //   paint: {
+      //     "text-color": colors.black,
+      //     "text-halo-color": colors.white,
+      //     "text-halo-width": 1,
+      //   },
+      // });
 
       // Rows
       map.current!.addLayer({

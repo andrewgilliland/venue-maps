@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { defaultSection } from "./CustomImageMap";
 
 type SectionBuilderProps = {
   newSection: GeoJSON.Feature;
@@ -17,12 +18,12 @@ export default function SectionBuilder({
   sections,
   setSections,
 }: SectionBuilderProps) {
-  const [sectionName, setSectionName] = useState<string>("");
+  const [sectionName, setSectionName] = useState<string>(
+    newSection.properties?.section
+  );
 
   const addSection = (newSection: GeoJSON.Feature) => {
     setSections((prevSections) => {
-      console.log("Previous Features:", prevSections.features);
-
       const updatedFeatures = [...prevSections.features, newSection];
 
       return { ...prevSections, features: updatedFeatures };
@@ -43,13 +44,44 @@ export default function SectionBuilder({
       coordinates: [[...coordinates, coordinates[0]]], // Close the polygon
     };
 
-    console.log("updatedNewSection: ", updatedNewSection);
+    setNewSection(updatedNewSection);
+  };
+
+  const updateNewSectionSectionName = (
+    updatedNewSection: GeoJSON.Feature,
+    sectionName: string
+  ) => {
+    if (!updatedNewSection.properties) {
+      updatedNewSection.properties = {};
+    }
+
+    updatedNewSection.properties.section = sectionName;
 
     setNewSection(updatedNewSection);
+    setSectionName(sectionName);
   };
 
   const deleteCoordinate = (index: number) => {
     setCoordinates((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // first make sure section name is unique
+    const isUnique = !sections.features.some(
+      (feature) => feature.properties?.section === sectionName
+    );
+
+    if (!isUnique) {
+      alert("Section name must be unique");
+      return;
+    }
+
+    addSection({ ...newSection });
+    setSectionName("");
+    setCoordinates([]);
+    setNewSection(defaultSection);
   };
 
   return (
@@ -70,15 +102,8 @@ export default function SectionBuilder({
           type="text"
           value={sectionName}
           onChange={(e) => {
-            const isUnique = !sections.features.some(
-              (feature) => feature.properties?.section === e.target.value
-            );
-
-            if (!isUnique) {
-              alert("Section name must be unique");
-              return;
-            }
-            setSectionName(e.target.value);
+            // setSectionName(e.target.value);
+            updateNewSectionSectionName({ ...newSection }, e.target.value);
           }}
           className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
           placeholder="Enter section name"
@@ -132,11 +157,7 @@ export default function SectionBuilder({
 
         <button
           className="text-white border border-green-500 px-3 py-2 rounded mb-4 bg-green-600 hover:bg-green-700 transition-colors duration-200"
-          onClick={() => {
-            addSection({ ...newSection });
-            setSectionName("");
-            setCoordinates([]);
-          }}
+          onClick={handleSubmit}
         >
           Add New Section
         </button>
