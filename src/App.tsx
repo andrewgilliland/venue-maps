@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import VenueMap from "./components/CustomImageMap";
 
-export const apiEndpoint = "http://localhost:61364/sections";
+export const apiEndpoint = "http://localhost:8787/sections";
 
 function App() {
   const [sections, setSections] = useState<GeoJSON.FeatureCollection>({
