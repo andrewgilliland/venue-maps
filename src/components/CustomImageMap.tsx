@@ -340,45 +340,45 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       // });
 
       // Rows
-      map.current!.addLayer({
-        id: "rows",
-        type: "line",
-        source: detailLayerName,
-        minzoom: highZoom,
-        filter: ["==", ["get", "type"], "row"],
-        paint: {
-          "line-color": "#6b7280",
-          "line-width": 2,
-          "line-opacity": 0.8,
-        },
-      });
+      // map.current!.addLayer({
+      //   id: "rows",
+      //   type: "line",
+      //   source: detailLayerName,
+      //   minzoom: highZoom,
+      //   filter: ["==", ["get", "type"], "row"],
+      //   paint: {
+      //     "line-color": "#6b7280",
+      //     "line-width": 2,
+      //     "line-opacity": 0.8,
+      //   },
+      // });
 
       // Row labels
-      map.current!.addLayer({
-        id: "row-labels",
-        type: "symbol",
-        source: detailLayerName,
-        minzoom: highZoom,
-        filter: ["==", ["get", "type"], "row"],
-        layout: {
-          "text-field": [
-            "concat",
-            "Row ",
-            ["get", "row"],
-            " (",
-            ["get", "seats"],
-            ")",
-          ],
-          "text-size": 12,
-          "symbol-placement": "line",
-          "text-allow-overlap": true,
-        },
-        paint: {
-          "text-color": "#374151",
-          "text-halo-color": "#ffffff",
-          "text-halo-width": 1,
-        },
-      });
+      // map.current!.addLayer({
+      //   id: "row-labels",
+      //   type: "symbol",
+      //   source: detailLayerName,
+      //   minzoom: highZoom,
+      //   filter: ["==", ["get", "type"], "row"],
+      //   layout: {
+      //     "text-field": [
+      //       "concat",
+      //       "Row ",
+      //       ["get", "row"],
+      //       " (",
+      //       ["get", "seats"],
+      //       ")",
+      //     ],
+      //     "text-size": 12,
+      //     "symbol-placement": "line",
+      //     "text-allow-overlap": true,
+      //   },
+      //   paint: {
+      //     "text-color": "#374151",
+      //     "text-halo-color": "#ffffff",
+      //     "text-halo-width": 1,
+      //   },
+      // });
 
       // lick interactions with sales data
       // map.current!.on("click", "seating-fill", (e) => {
