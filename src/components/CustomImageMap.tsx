@@ -37,11 +37,11 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   const imageSourceName = "venue-image";
   const seatingLayerName = "seating-sections";
   const newSectionLayerName = "new-section";
-  const detailLayerName = "detailed-features";
+  // const detailLayerName = "detailed-features";
 
   const minZoom = 7;
   const mediumZoom = 8;
-  const highZoom = 9;
+  // const highZoom = 9;
   const maxZoom = 12;
 
   const mapContainer = useRef<HTMLDivElement>(null);
