@@ -8,6 +8,7 @@ on:
 env:
   AWS_REGION: us-east-1
   S3_BUCKET: venue-maps-bucket-1234567890
+  CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -57,20 +58,14 @@ jobs:
 
       - name: Invalidate CloudFront Cache
         run: |
-          echo "🔍 Getting CloudFront distribution ID from CloudFormation..."
-          DISTRIBUTION_ID=$(aws cloudformation describe-stacks \
-            --stack-name venue-maps-infrastructure \
-            --query 'Stacks[0].Outputs[?OutputKey==`CloudFrontDistributionId`].OutputValue' \
-            --output text)
-
-          if [ ! -z "$DISTRIBUTION_ID" ] && [ "$DISTRIBUTION_ID" != "None" ]; then
-            echo "🔄 Invalidating CloudFront distribution: $DISTRIBUTION_ID"
+          if [ ! -z "${{ env.CLOUDFRONT_DISTRIBUTION_ID }}" ] && [ "${{ env.CLOUDFRONT_DISTRIBUTION_ID }}" != "None" ]; then
+            echo "🔄 Invalidating CloudFront distribution: ${{ env.CLOUDFRONT_DISTRIBUTION_ID }}"
             aws cloudfront create-invalidation \
-              --distribution-id $DISTRIBUTION_ID \
+              --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
               --paths "/*"
             echo "✅ CloudFront cache invalidation started"
           else
-            echo "⚠️  No CloudFront distribution found in CloudFormation stack"
+            echo "⚠️  CloudFront distribution ID not configured"
           fi
 
       - name: Output Deployment URLs
@@ -78,13 +73,8 @@ jobs:
           echo "🎉 Deployment completed successfully!"
           echo "📍 S3 Website URL: https://${{ env.S3_BUCKET }}.s3-website-${{ env.AWS_REGION }}.amazonaws.com"
 
-          # Get CloudFront URL from CloudFormation
-          CLOUDFRONT_URL=$(aws cloudformation describe-stacks \
-            --stack-name venue-maps-infrastructure \
-            --query 'Stacks[0].Outputs[?OutputKey==`WebsiteURL`].OutputValue' \
-            --output text)
-
-          if [ ! -z "$CLOUDFRONT_URL" ] && [ "$CLOUDFRONT_URL" != "None" ]; then
-            echo "🚀 CloudFront URL: $CLOUDFRONT_URL"
+          if [ ! -z "${{ env.CLOUDFRONT_DISTRIBUTION_ID }}" ] && [ "${{ env.CLOUDFRONT_DISTRIBUTION_ID }}" != "None" ]; then
+            echo "🚀 CloudFront Distribution ID: ${{ env.CLOUDFRONT_DISTRIBUTION_ID }}"
+            echo "💡 CloudFront URL: Check AWS Console for the domain name"
             echo "⏳ Note: CloudFront cache invalidation may take 5-15 minutes to complete"
           fi
