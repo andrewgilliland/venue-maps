@@ -55,35 +55,36 @@ jobs:
             --include "*.html" \
             --include "*.json"
 
-    #   - name: Invalidate CloudFront (if exists)
-    #     run: |
-    #       # Get CloudFront distribution ID if it exists
-    #       DISTRIBUTION_ID=$(aws cloudfront list-distributions \
-    #         --query "DistributionList.Items[?Origins.Items[0].DomainName==\`${{ env.S3_BUCKET }}.s3.amazonaws.com\`].Id" \
-    #         --output text)
+      - name: Invalidate CloudFront Cache
+        run: |
+          echo "🔍 Getting CloudFront distribution ID from CloudFormation..."
+          DISTRIBUTION_ID=$(aws cloudformation describe-stacks \
+            --stack-name venue-maps-infrastructure \
+            --query 'Stacks[0].Outputs[?OutputKey==`CloudFrontDistributionId`].OutputValue' \
+            --output text)
 
-    #       if [ ! -z "$DISTRIBUTION_ID" ] && [ "$DISTRIBUTION_ID" != "None" ]; then
-    #         echo "Invalidating CloudFront distribution: $DISTRIBUTION_ID"
-    #         aws cloudfront create-invalidation \
-    #           --distribution-id $DISTRIBUTION_ID \
-    #           --paths "/*"
-    #       else
-    #         echo "No CloudFront distribution found for this S3 bucket"
-    #       fi
+          if [ ! -z "$DISTRIBUTION_ID" ] && [ "$DISTRIBUTION_ID" != "None" ]; then
+            echo "🔄 Invalidating CloudFront distribution: $DISTRIBUTION_ID"
+            aws cloudfront create-invalidation \
+              --distribution-id $DISTRIBUTION_ID \
+              --paths "/*"
+            echo "✅ CloudFront cache invalidation started"
+          else
+            echo "⚠️  No CloudFront distribution found in CloudFormation stack"
+          fi
 
-    #   - name: Output website URL
-    #     run: |
-    #       echo "Website deployed to: https://${{ env.S3_BUCKET }}.s3-website-${{ env.AWS_REGION }}.amazonaws.com"
+      - name: Output Deployment URLs
+        run: |
+          echo "🎉 Deployment completed successfully!"
+          echo "📍 S3 Website URL: https://${{ env.S3_BUCKET }}.s3-website-${{ env.AWS_REGION }}.amazonaws.com"
 
-    #       # If CloudFront exists, show that URL too
-    #       DISTRIBUTION_ID=$(aws cloudfront list-distributions \
-    #         --query "DistributionList.Items[?Origins.Items[0].DomainName==\`${{ env.S3_BUCKET }}.s3.amazonaws.com\`].Id" \
-    #         --output text)
+          # Get CloudFront URL from CloudFormation
+          CLOUDFRONT_URL=$(aws cloudformation describe-stacks \
+            --stack-name venue-maps-infrastructure \
+            --query 'Stacks[0].Outputs[?OutputKey==`WebsiteURL`].OutputValue' \
+            --output text)
 
-    #       if [ ! -z "$DISTRIBUTION_ID" ] && [ "$DISTRIBUTION_ID" != "None" ]; then
-    #         DOMAIN_NAME=$(aws cloudfront get-distribution \
-    #           --id $DISTRIBUTION_ID \
-    #           --query "Distribution.DomainName" \
-    #           --output text)
-    #         echo "CloudFront URL: https://$DOMAIN_NAME"
-    #       fi
+          if [ ! -z "$CLOUDFRONT_URL" ] && [ "$CLOUDFRONT_URL" != "None" ]; then
+            echo "🚀 CloudFront URL: $CLOUDFRONT_URL"
+            echo "⏳ Note: CloudFront cache invalidation may take 5-15 minutes to complete"
+          fi
