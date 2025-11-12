@@ -1,9 +1,9 @@
-import { apiEndpoint } from "../App";
-import SectionCard, { type SectionProperties } from "./SectionCard";
+import { apiEndpoint, type Sections } from "../App";
+import SectionCard from "./SectionCard";
 
 type SectionsViewerProps = {
-  sections: GeoJSON.FeatureCollection;
-  setSections: React.Dispatch<React.SetStateAction<GeoJSON.FeatureCollection>>;
+  sections: Sections;
+  setSections: React.Dispatch<React.SetStateAction<Sections>>;
 };
 
 export default function SectionsViewer({
@@ -70,12 +70,7 @@ export default function SectionsViewer({
                   {features.map((feature, index) => (
                     <SectionCard
                       key={index}
-                      feature={
-                        feature as GeoJSON.Feature<
-                          GeoJSON.Polygon,
-                          SectionProperties
-                        >
-                      }
+                      feature={feature}
                       setSections={setSections}
                     />
                   ))}

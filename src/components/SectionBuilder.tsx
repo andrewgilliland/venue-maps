@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { defaultSection } from "./CustomImageMap";
+import { defaultSection } from "./VenueMap";
+import type { Section, Sections } from "../App";
 
 type SectionBuilderProps = {
-  newSection: GeoJSON.Feature;
-  setNewSection: React.Dispatch<React.SetStateAction<GeoJSON.Feature>>;
+  newSection: Section;
+  setNewSection: React.Dispatch<React.SetStateAction<Section>>;
   coordinates: [number, number][];
   setCoordinates: React.Dispatch<React.SetStateAction<[number, number][]>>;
-  sections: GeoJSON.FeatureCollection;
-  setSections: React.Dispatch<React.SetStateAction<GeoJSON.FeatureCollection>>;
+  sections: Sections;
+  setSections: React.Dispatch<React.SetStateAction<Sections>>;
 };
 
 export default function SectionBuilder({
@@ -22,7 +23,7 @@ export default function SectionBuilder({
     newSection.properties?.section
   );
 
-  const addSection = (newSection: GeoJSON.Feature) => {
+  const addSection = (newSection: Section) => {
     setSections((prevSections) => {
       const updatedFeatures = [...prevSections.features, newSection];
 
@@ -31,7 +32,7 @@ export default function SectionBuilder({
   };
 
   const updateNewSection = (
-    updatedNewSection: GeoJSON.Feature,
+    updatedNewSection: Section,
     coordinates: [number, number][]
   ) => {
     if (!updatedNewSection.properties) {
@@ -48,7 +49,7 @@ export default function SectionBuilder({
   };
 
   const updateNewSectionSectionName = (
-    updatedNewSection: GeoJSON.Feature,
+    updatedNewSection: Section,
     sectionName: string
   ) => {
     if (!updatedNewSection.properties) {

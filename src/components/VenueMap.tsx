@@ -5,11 +5,12 @@ import "../styles/CustomImageMap.css";
 import { colors } from "../theme/colors";
 import SectionsViewer from "./SectionsViewer";
 import SectionBuilder from "./SectionBuilder";
+import type { Section, Sections } from "../App";
 // import { renderSectionPopoverToString } from "./SectionPopover";
 // import type { Section } from "./SectionPopover";
 // import MapLegend from "./MapLegend";
 
-export const defaultSection: GeoJSON.Feature = {
+export const defaultSection: Section = {
   type: "Feature",
   properties: {
     section: "",
@@ -27,8 +28,8 @@ export const defaultSection: GeoJSON.Feature = {
 };
 
 type VenueMapProps = {
-  sections: GeoJSON.FeatureCollection;
-  setSections: React.Dispatch<React.SetStateAction<GeoJSON.FeatureCollection>>;
+  sections: Sections;
+  setSections: React.Dispatch<React.SetStateAction<Sections>>;
 };
 
 export default function VenueMap({ sections, setSections }: VenueMapProps) {
@@ -53,7 +54,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
   const [coordinates, setCoordinates] = useState<[number, number][]>([]);
-  const [newSection, setNewSection] = useState<GeoJSON.Feature>(defaultSection);
+  const [newSection, setNewSection] = useState<Section>(defaultSection);
 
   const newGeoJson = {
     type: "FeatureCollection",
@@ -65,7 +66,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   };
 
   const updateNewSection = (
-    updatedNewSection: GeoJSON.Feature,
+    updatedNewSection: Section,
     coords: [number, number][]
   ) => {
     if (!updatedNewSection.properties) {
