@@ -5,7 +5,7 @@ import "../styles/CustomImageMap.css";
 import { colors } from "../theme/colors";
 import SectionsViewer from "./SectionsViewer";
 import SectionBuilder from "./SectionBuilder";
-import type { Section, Sections } from "../App";
+import type { Section, Sections } from "../types";
 import { useMapHighlight } from "../hooks/useMapHighlight";
 // import { renderSectionPopoverToString } from "./SectionPopover";
 // import type { Section } from "./SectionPopover";

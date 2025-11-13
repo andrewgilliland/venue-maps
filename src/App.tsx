@@ -1,24 +1,8 @@
 import { useEffect, useState } from "react";
 import VenueMap from "./components/VenueMap";
+import type { Sections } from "./types";
 
 export const apiEndpoint = `${import.meta.env.VITE_API_URL}/sections`;
-
-export type Section = GeoJSON.Feature<GeoJSON.Polygon, SectionProperties>;
-
-export type Sections = GeoJSON.FeatureCollection<
-  GeoJSON.Polygon,
-  SectionProperties
->;
-
-export type SectionProperties = {
-  section: string;
-  capacity?: number;
-  price?: string;
-  tier?: string;
-  seatsSold?: number;
-  revenue?: number;
-  salesPercentage?: number;
-};
 
 function App() {
   const [sections, setSections] = useState<Sections>({

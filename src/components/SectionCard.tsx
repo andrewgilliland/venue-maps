@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Section, Sections } from "../App";
+import type { Section, Sections } from "../types";
 
 type SectionCardProps = {
   feature: Section;

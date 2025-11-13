@@ -1,4 +1,5 @@
-import { apiEndpoint, type Sections } from "../App";
+import { apiEndpoint } from "../App";
+import type { Sections } from "../types";
 import SectionCard from "./SectionCard";
 
 type SectionsViewerProps = {
@@ -31,7 +32,7 @@ export default function SectionsViewer({
     return geoJSON;
   };
 
-  const handleExport = () => {
+  const handleSave = () => {
     fetch(apiEndpoint, {
       method: "POST",
       headers: {
@@ -56,9 +57,9 @@ export default function SectionsViewer({
 
       <button
         className="text-white border border-green-500 px-3 py-2 rounded mb-4 bg-green-600 hover:bg-green-700 transition-colors duration-200"
-        onClick={handleExport}
+        onClick={handleSave}
       >
-        Export GeoJSON
+        Save GeoJSON
       </button>
 
       <div className="space-y-4 mt-2">

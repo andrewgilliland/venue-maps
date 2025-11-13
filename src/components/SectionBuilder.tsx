@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { defaultSection } from "./VenueMap";
-import type { Section, Sections } from "../App";
+import type { Section, Sections } from "../types";
 
 type SectionBuilderProps = {
   newSection: Section;
