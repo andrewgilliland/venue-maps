@@ -36,7 +36,7 @@ export default function SectionBuilder({
     coordinates: [number, number][]
   ) => {
     if (!updatedNewSection.properties) {
-      updatedNewSection.properties = {};
+      updatedNewSection.properties = { section: "" };
     }
 
     updatedNewSection.properties.section = sectionName;
@@ -53,7 +53,7 @@ export default function SectionBuilder({
     sectionName: string
   ) => {
     if (!updatedNewSection.properties) {
-      updatedNewSection.properties = {};
+      updatedNewSection.properties = { section: "" };
     }
 
     updatedNewSection.properties.section = sectionName;
