@@ -23,6 +23,12 @@ export default function SectionBuilder({
     newSection.properties?.section
   );
 
+  const hasUniqueName = !sections.features.some(
+    (feature) => feature.properties?.section === sectionName
+  );
+  const disabled =
+    coordinates.length < 5 || sectionName.trim() === "" || !hasUniqueName;
+
   const addSection = (newSection: Section) => {
     setSections((prevSections) => {
       const updatedFeatures = [...prevSections.features, newSection];
@@ -157,11 +163,32 @@ export default function SectionBuilder({
         </div>
 
         <button
-          className="text-white border border-green-500 px-3 py-2 rounded mb-4 bg-green-600 hover:bg-green-700 transition-colors duration-200"
+          className={`text-white border border-green-500 px-3 py-2 rounded mb-4 bg-green-600 hover:bg-green-700 transition-colors duration-200 ${
+            disabled ? "opacity-50 cursor-not-allowed" : ""
+          }`}
           onClick={handleSubmit}
+          disabled={disabled}
         >
           Add New Section
         </button>
+        <div>
+          {coordinates.length < 5 && (
+            <p className="text-red-500 text-sm mb-2">
+              At least 5 coordinates are required to form a closed polygon.
+            </p>
+          )}
+          {sectionName.trim() === "" && (
+            <p className="text-red-500 text-sm mb-2">
+              Section name cannot be empty.
+            </p>
+          )}
+
+          {!hasUniqueName && (
+            <p className="text-red-500 text-sm mb-2">
+              Section name must be unique.
+            </p>
+          )}
+        </div>
       </div>
     </section>
   );
