@@ -4,17 +4,23 @@ import type { Section, Sections } from "../App";
 type SectionCardProps = {
   feature: Section;
   setSections: React.Dispatch<React.SetStateAction<Sections>>;
+  onHover: (sectionName: string) => void;
+  onLeave: () => void;
 };
 
 export default function SectionCard({
   feature,
   setSections,
+  onHover,
+  onLeave,
 }: SectionCardProps) {
   const {
     properties: { section },
     geometry: { coordinates },
   } = feature;
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleMouseEnter = () => section && onHover(section);
 
   const updateCoordinate = (
     coordinateValue: number,
@@ -23,7 +29,7 @@ export default function SectionCard({
   ) => {
     // console.log("coordinateValue:", coordinateValue);
     // console.log("section:", section);
-    console.log("coordIndex:", coordIndex);
+    // console.log("coordIndex:", coordIndex);
 
     setSections((prevSections) => {
       const updatedFeatures = prevSections.features.map((feature) => {
@@ -73,7 +79,11 @@ export default function SectionCard({
   };
 
   return (
-    <div className="mb-4 border border-gray-700 rounded-lg px-4 py-2 bg-gray-900">
+    <div
+      className={`p-3 bg-gray-900 rounded-lg border border-gray-800 transition-all duration-200 cursor-pointer hover:border-blue-400`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={onLeave}
+    >
       <div className="flex justify-between items-center">
         <h4 className="font-semibold text-md text-white">{section}</h4>
         <button

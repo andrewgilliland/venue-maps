@@ -4,11 +4,13 @@ import SectionCard from "./SectionCard";
 type SectionsViewerProps = {
   sections: Sections;
   setSections: React.Dispatch<React.SetStateAction<Sections>>;
+  setActiveSectionId: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 export default function SectionsViewer({
   sections,
   setSections,
+  setActiveSectionId,
 }: SectionsViewerProps) {
   const { type, features } = sections;
 
@@ -62,7 +64,7 @@ export default function SectionsViewer({
           <div className="border-t-2 border-gray-800 pt-4">
             <p className="text-gray-400">Type: {type}</p>
             <p className="text-gray-400">Sections:</p>
-            <div className="mt-2">
+            <div className="mt-2 grid gap-3">
               {features.length === 0 ? (
                 <p className="text-gray-400">No GeoJSON data available.</p>
               ) : (
@@ -72,6 +74,8 @@ export default function SectionsViewer({
                       key={index}
                       feature={feature}
                       setSections={setSections}
+                      onHover={(sectionName) => setActiveSectionId(sectionName)}
+                      onLeave={() => setActiveSectionId(null)}
                     />
                   ))}
                 </>

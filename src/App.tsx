@@ -12,12 +12,12 @@ export type Sections = GeoJSON.FeatureCollection<
 
 export type SectionProperties = {
   section: string;
-  capacity: number;
-  price: string;
-  tier: string;
-  seatsSold: number;
-  revenue: number;
-  salesPercentage: number;
+  capacity?: number;
+  price?: string;
+  tier?: string;
+  seatsSold?: number;
+  revenue?: number;
+  salesPercentage?: number;
 };
 
 function App() {

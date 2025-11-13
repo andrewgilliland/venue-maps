@@ -55,6 +55,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   const [lng, setLng] = useState(0);
   const [coordinates, setCoordinates] = useState<[number, number][]>([]);
   const [newSection, setNewSection] = useState<Section>(defaultSection);
+  const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
 
   const newGeoJson = {
     type: "FeatureCollection",
@@ -70,7 +71,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
     coords: [number, number][]
   ) => {
     if (!updatedNewSection.properties) {
-      updatedNewSection.properties = {};
+      updatedNewSection.properties = { section: "" };
     }
 
     updatedNewSection.geometry = {
@@ -258,6 +259,18 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
           "text-halo-width": 1, // Increase halo for better visibility
         },
       });
+
+      if (activeSectionId) {
+        // Show hover outline for the active section
+        map.current!.setFilter("seating-hover-outline", [
+          "==",
+          "section",
+          activeSectionId,
+        ]);
+      } else {
+        // Hide hover outline when no section is active
+        map.current!.setFilter("seating-hover-outline", ["==", "section", ""]);
+      }
 
       // Add detailed seating source
       // map.current!.addSource(detailLayerName, {
@@ -506,7 +519,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       map.current?.remove();
       map.current = null;
     };
-  }, [sections, newSection]);
+  }, [sections, newSection, activeSectionId]);
 
   return (
     <div className="flex gap-4">
@@ -552,7 +565,11 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
         </div>
       </div>
 
-      <SectionsViewer sections={sections} setSections={setSections} />
+      <SectionsViewer
+        sections={sections}
+        setSections={setSections}
+        setActiveSectionId={setActiveSectionId}
+      />
     </div>
   );
 }
