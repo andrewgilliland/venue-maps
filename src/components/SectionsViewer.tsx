@@ -4,13 +4,15 @@ import SectionCard from "./SectionCard";
 type SectionsViewerProps = {
   sections: Sections;
   setSections: React.Dispatch<React.SetStateAction<Sections>>;
-  setActiveSectionId: React.Dispatch<React.SetStateAction<string | null>>;
+  onSectionCardHover: (sectionId: string) => void;
+  onSectionCardLeave: () => void;
 };
 
 export default function SectionsViewer({
   sections,
   setSections,
-  setActiveSectionId,
+  onSectionCardHover,
+  onSectionCardLeave,
 }: SectionsViewerProps) {
   const { type, features } = sections;
 
@@ -74,8 +76,8 @@ export default function SectionsViewer({
                       key={index}
                       feature={feature}
                       setSections={setSections}
-                      onHover={(sectionName) => setActiveSectionId(sectionName)}
-                      onLeave={() => setActiveSectionId(null)}
+                      onHover={(sectionName) => onSectionCardHover(sectionName)}
+                      onLeave={() => onSectionCardLeave()}
                     />
                   ))}
                 </>

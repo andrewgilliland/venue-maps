@@ -6,6 +6,7 @@ import { colors } from "../theme/colors";
 import SectionsViewer from "./SectionsViewer";
 import SectionBuilder from "./SectionBuilder";
 import type { Section, Sections } from "../App";
+import { useMapHighlight } from "../hooks/useMapHighlight";
 // import { renderSectionPopoverToString } from "./SectionPopover";
 // import type { Section } from "./SectionPopover";
 // import MapLegend from "./MapLegend";
@@ -49,13 +50,14 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   const map = useRef<Map | null>(null);
   const hoverPopup = useRef<Popup | null>(null);
 
+  const { highlightSection, clearHighlight } = useMapHighlight(map);
+
   const [mapZoom, setMapZoom] = useState(mediumZoom);
   const [mapCenter, setMapCenter] = useState<[number, number]>([0, 0]);
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
   const [coordinates, setCoordinates] = useState<[number, number][]>([]);
   const [newSection, setNewSection] = useState<Section>(defaultSection);
-  const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
 
   const newGeoJson = {
     type: "FeatureCollection",
@@ -211,7 +213,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
         source: seatingLayerName,
         paint: {
           "line-color": colors.black,
-          "line-width": 4,
+          "line-width": 3,
           "line-opacity": 0.8,
         },
         filter: ["==", "section", ""], // Initially hide all features
@@ -259,18 +261,6 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
           "text-halo-width": 1, // Increase halo for better visibility
         },
       });
-
-      if (activeSectionId) {
-        // Show hover outline for the active section
-        map.current!.setFilter("seating-hover-outline", [
-          "==",
-          "section",
-          activeSectionId,
-        ]);
-      } else {
-        // Hide hover outline when no section is active
-        map.current!.setFilter("seating-hover-outline", ["==", "section", ""]);
-      }
 
       // Add detailed seating source
       // map.current!.addSource(detailLayerName, {
@@ -519,7 +509,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       map.current?.remove();
       map.current = null;
     };
-  }, [sections, newSection, activeSectionId]);
+  }, [sections, newSection]);
 
   return (
     <div className="flex gap-4">
@@ -568,7 +558,8 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       <SectionsViewer
         sections={sections}
         setSections={setSections}
-        setActiveSectionId={setActiveSectionId}
+        onSectionCardHover={highlightSection}
+        onSectionCardLeave={clearHighlight}
       />
     </div>
   );

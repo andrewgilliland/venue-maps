@@ -20,8 +20,6 @@ export default function SectionCard({
   } = feature;
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleMouseEnter = () => section && onHover(section);
-
   const updateCoordinate = (
     coordinateValue: number,
     section: string,
@@ -81,7 +79,7 @@ export default function SectionCard({
   return (
     <div
       className={`p-3 bg-gray-900 rounded-lg border border-gray-800 transition-all duration-200 cursor-pointer hover:border-blue-400`}
-      onMouseEnter={handleMouseEnter}
+      onMouseEnter={() => section && onHover(section)}
       onMouseLeave={onLeave}
     >
       <div className="flex justify-between items-center">
