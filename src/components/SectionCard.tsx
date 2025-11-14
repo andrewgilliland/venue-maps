@@ -3,6 +3,7 @@ import type { Section, Sections } from "../types";
 
 type SectionCardProps = {
   feature: Section;
+  sections: Sections;
   setSections: React.Dispatch<React.SetStateAction<Sections>>;
   onHover: (sectionName: string) => void;
   onLeave: () => void;
@@ -21,46 +22,50 @@ export default function SectionCard({
   const [isOpen, setIsOpen] = useState(false);
 
   const updateCoordinate = (
-    coordinateValue: number,
+    value: number,
     section: string,
-    coordIndex: number
+    valueIndex: number,
+    coordinateIndex: number
   ) => {
-    // console.log("coordinateValue:", coordinateValue);
-    // console.log("section:", section);
-    // console.log("coordIndex:", coordIndex);
+    console.log("coordinateValue:", value);
+    console.log("section:", section);
+    console.log("valueIndex:", valueIndex);
 
-    setSections((prevSections) => {
-      const updatedFeatures = prevSections.features.map((feature) => {
-        if (feature.properties && feature.properties.section === section) {
-          const newCoordinates = feature.geometry.coordinates.map(
-            (polygon, polygonIndex) => {
-              if (polygonIndex === 0) {
-                return polygon.map((coord, index) => {
-                  if (index === coordIndex) {
-                    return [
-                      coordIndex === 0 ? coordinateValue : coord[0],
-                      coordIndex === 1 ? coordinateValue : coord[1],
-                    ];
-                  }
-                  return coord;
-                });
-              }
-              return polygon;
+    if (valueIndex === 0) {
+      console.log("Updating x");
+    } else if (valueIndex === 1) {
+      console.log("Updating y");
+    }
+
+    console.log("coordinateIndex:", coordinateIndex);
+
+    // setSections((prevSections) => {
+    const updatedFeatures = prevSections.features.map((feature) => {
+      if (feature.properties && feature.properties.section === section) {
+        const updatedCoordinates = feature.geometry.coordinates.map(
+          (coordinate, coordIndex) => {
+            if (coordIndex === coordinateIndex) {
+              const newCoordinate = [...coordinate];
+              newCoordinate[valueIndex] = value;
+              return newCoordinate;
             }
-          );
-          return {
-            ...feature,
-            geometry: {
-              ...feature.geometry,
-              coordinates: newCoordinates,
-            },
-          };
-        }
-        return feature;
-      });
+            return coordinate;
+          }
+        );
 
-      return { ...prevSections, features: updatedFeatures };
+        return {
+          ...feature,
+          geometry: {
+            ...feature.geometry,
+            coordinates: updatedCoordinates,
+          },
+        };
+      }
+      return feature;
     });
+
+    // return { ...prevSections, features: updatedFeatures };
+    // });
   };
 
   const deleteSection = (sectionToDelete: GeoJSON.Feature) => {
@@ -101,36 +106,27 @@ export default function SectionCard({
             Coordinates
           </label>
           <div>
-            {coordinates.map((coord, index) => (
+            {coordinates.map((coordinate, index) => (
               <div key={index} className="flex flex-col gap-2 overflow-hidden">
-                {coord.map(([x, y], coordIndex) => (
-                  <div key={coordIndex} className="flex gap-2 first:mt-4">
-                    <input
-                      type="number"
-                      value={x}
-                      onChange={(e) =>
-                        updateCoordinate(
-                          Number(e.target.value),
-                          section,
-                          coordIndex
-                        )
-                      }
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      step="0.001"
-                    />
-                    <input
-                      type="number"
-                      value={y}
-                      onChange={(e) =>
-                        updateCoordinate(
-                          Number(e.target.value),
-                          section,
-                          coordIndex + 1
-                        )
-                      }
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      step="0.001"
-                    />
+                {coordinate.map((position, coordinateIndex) => (
+                  <div key={coordinateIndex} className="flex gap-2 first:mt-4">
+                    {position.map((value, valueIndex) => (
+                      <input
+                        key={valueIndex}
+                        type="number"
+                        value={value}
+                        onChange={(e) =>
+                          updateCoordinate(
+                            Number(e.target.value),
+                            section,
+                            valueIndex,
+                            coordinateIndex
+                          )
+                        }
+                        className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        step="0.001"
+                      />
+                    ))}
                   </div>
                 ))}
               </div>
