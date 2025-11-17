@@ -6,7 +6,7 @@ import { colors } from "../theme/colors";
 import SectionsViewer from "./SectionsViewer";
 import SectionBuilder from "./SectionBuilder";
 import type { Section, Sections, SetState } from "../types";
-import { useMapHighlight } from "../hooks/useMapHighlight";
+import { useMap } from "../hooks/useMap";
 // import { renderSectionPopoverToString } from "./SectionPopover";
 // import type { Section } from "./SectionPopover";
 // import MapLegend from "./MapLegend";
@@ -50,7 +50,9 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   const map = useRef<Map | null>(null);
   const hoverPopup = useRef<Popup | null>(null);
 
-  const { highlightSection, clearHighlight } = useMapHighlight(map);
+  const { highlightSection, clearHighlight, setSectionsData } = useMap(map);
+
+  setSectionsData(sections);
 
   const [mapZoom, setMapZoom] = useState(mediumZoom);
   const [mapCenter, setMapCenter] = useState<[number, number]>([0, 0]);
@@ -509,7 +511,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       map.current?.remove();
       map.current = null;
     };
-  }, [sections, newSection]);
+  }, [newSection]);
 
   return (
     <div className="flex justify-between gap-4">
