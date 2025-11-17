@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import type { Map, GeoJSONSource } from "maplibre-gl";
+import type { SectionsFeatureColletion } from "../types";
 
 /**
  * Custom hook for highlighting map sections without causing React re-renders
@@ -39,7 +40,7 @@ export const useMap = (mapRef: React.RefObject<Map | null>) => {
   }, [mapRef]);
 
   const setSectionsData = useCallback(
-    (sections: any) => {
+    (sections: SectionsFeatureColletion) => {
       if (!mapRef.current) return;
 
       const source = mapRef.current.getSource("seating-sections");
@@ -52,9 +53,25 @@ export const useMap = (mapRef: React.RefObject<Map | null>) => {
     [mapRef]
   );
 
+  const setNewSectionData = useCallback(
+    (newSection: SectionsFeatureColletion) => {
+      if (!mapRef.current) return;
+
+      const source = mapRef.current.getSource("new-section");
+
+      if (source && source.type === "geojson") {
+        // Cast to GeoJSONSource and use setData
+        const geoJsonSource = source as GeoJSONSource;
+        geoJsonSource.setData(newSection);
+      }
+    },
+    [mapRef]
+  );
+
   return {
     highlightSection,
     clearHighlight,
     setSectionsData,
+    setNewSectionData,
   };
 };

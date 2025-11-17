@@ -9,6 +9,11 @@ export type Sections = GeoJSON.FeatureCollection<
   SectionProperties
 >;
 
+export type SectionsFeatureColletion = GeoJSON.FeatureCollection<
+  GeoJSON.Polygon,
+  SectionProperties
+>;
+
 export type SectionProperties = {
   section: string;
   capacity?: number;

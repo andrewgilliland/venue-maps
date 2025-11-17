@@ -5,7 +5,12 @@ import "../styles/CustomImageMap.css";
 import { colors } from "../theme/colors";
 import SectionsViewer from "./SectionsViewer";
 import SectionBuilder from "./SectionBuilder";
-import type { Section, Sections, SetState } from "../types";
+import type {
+  Section,
+  SectionsFeatureColletion,
+  Sections,
+  SetState,
+} from "../types";
 import { useMap } from "../hooks/useMap";
 // import { renderSectionPopoverToString } from "./SectionPopover";
 // import type { Section } from "./SectionPopover";
@@ -29,7 +34,7 @@ export const defaultSection: Section = {
 };
 
 type VenueMapProps = {
-  sections: Sections;
+  sections: SectionsFeatureColletion;
   setSections: SetState<Sections>;
 };
 
@@ -50,25 +55,43 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   const map = useRef<Map | null>(null);
   const hoverPopup = useRef<Popup | null>(null);
 
-  const { highlightSection, clearHighlight, setSectionsData } = useMap(map);
-
-  setSectionsData(sections);
+  const {
+    highlightSection,
+    clearHighlight,
+    setSectionsData,
+    setNewSectionData,
+  } = useMap(map);
 
   const [mapZoom, setMapZoom] = useState(mediumZoom);
   const [mapCenter, setMapCenter] = useState<[number, number]>([0, 0]);
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
   const [coordinates, setCoordinates] = useState<[number, number][]>([]);
-  const [newSection, setNewSection] = useState<Section>(defaultSection);
+  const [newSection, setNewSection] = useState<Section>({
+    type: "Feature",
+    properties: {
+      section: "",
+      capacity: 50,
+      price: "$60",
+      tier: "Upper Level",
+      seatsSold: 20,
+      revenue: 1200,
+      salesPercentage: 40,
+    },
+    geometry: {
+      type: "Polygon",
+      coordinates: [coordinates],
+    },
+  });
 
-  const newGeoJson = {
+  const newGeoJson: SectionsFeatureColletion = {
     type: "FeatureCollection",
     features: [newSection],
   };
 
-  const addPointToCoordinates = (x: number, y: number): void => {
-    setCoordinates((prev) => [...prev, [x, y]]);
-  };
+  // useMap hook calls
+  setSectionsData(sections);
+  setNewSectionData(newGeoJson);
 
   const updateNewSection = (
     updatedNewSection: Section,
@@ -78,9 +101,11 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       updatedNewSection.properties = { section: "" };
     }
 
+    setCoordinates((prev) => [...prev, coords[0]]);
+
     updatedNewSection.geometry = {
       type: "Polygon",
-      coordinates: [[...coordinates, coords[0]]], // Close the polygon
+      coordinates: [[...coordinates]],
     };
 
     setNewSection(updatedNewSection);
@@ -420,8 +445,6 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
         const x = Number(coords.lng.toFixed(3));
         const y = Number(coords.lat.toFixed(3));
 
-        addPointToCoordinates(x, y);
-
         updateNewSection({ ...newSection }, [[x, y]]);
       });
 
@@ -511,7 +534,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       map.current?.remove();
       map.current = null;
     };
-  }, [newSection]);
+  }, []);
 
   return (
     <div className="flex justify-between gap-4">
