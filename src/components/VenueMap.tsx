@@ -512,8 +512,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   }, [sections, newSection]);
 
   return (
-    <div className="flex gap-4">
-      {/* <MapLegend /> */}
+    <div className="flex justify-between gap-4">
       <SectionBuilder
         newSection={newSection}
         setNewSection={setNewSection}
@@ -546,7 +545,6 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
           </button>
         </div>
 
-        {/* Coordinate Display */}
         <div className="absolute bottom-4 left-4 bg-gray-900 text-white px-3 py-2 rounded-lg shadow-lg">
           <div className="text-xs font-mono">
             <div>X: {lng}</div>

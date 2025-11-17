@@ -3,7 +3,6 @@ import type { Section, Sections } from "../types";
 
 type SectionCardProps = {
   feature: Section;
-  sections: Sections;
   setSections: React.Dispatch<React.SetStateAction<Sections>>;
   onHover: (sectionName: string) => void;
   onLeave: () => void;
@@ -25,47 +24,37 @@ export default function SectionCard({
     value: number,
     section: string,
     valueIndex: number,
-    coordinateIndex: number
+    coordinateIndex: number,
+    setSections: React.Dispatch<React.SetStateAction<Sections>>
   ) => {
-    console.log("coordinateValue:", value);
-    console.log("section:", section);
-    console.log("valueIndex:", valueIndex);
+    setSections((prevSections) => {
+      const updatedFeatures = prevSections.features.map((feature) => {
+        if (feature.properties && feature.properties.section === section) {
+          const updatedCoordinates = feature.geometry.coordinates[0].map(
+            (coordinate, coordIndex) => {
+              if (coordIndex === coordinateIndex) {
+                const newCoordinate = [...coordinate];
 
-    if (valueIndex === 0) {
-      console.log("Updating x");
-    } else if (valueIndex === 1) {
-      console.log("Updating y");
-    }
-
-    console.log("coordinateIndex:", coordinateIndex);
-
-    // setSections((prevSections) => {
-    const updatedFeatures = prevSections.features.map((feature) => {
-      if (feature.properties && feature.properties.section === section) {
-        const updatedCoordinates = feature.geometry.coordinates.map(
-          (coordinate, coordIndex) => {
-            if (coordIndex === coordinateIndex) {
-              const newCoordinate = [...coordinate];
-              newCoordinate[valueIndex] = value;
-              return newCoordinate;
+                newCoordinate[valueIndex] = value;
+                return newCoordinate;
+              }
+              return coordinate;
             }
-            return coordinate;
-          }
-        );
+          );
 
-        return {
-          ...feature,
-          geometry: {
-            ...feature.geometry,
-            coordinates: updatedCoordinates,
-          },
-        };
-      }
-      return feature;
+          return {
+            ...feature,
+            geometry: {
+              ...feature.geometry,
+              coordinates: [updatedCoordinates],
+            },
+          };
+        }
+        return feature;
+      });
+
+      return { ...prevSections, features: updatedFeatures };
     });
-
-    // return { ...prevSections, features: updatedFeatures };
-    // });
   };
 
   const deleteSection = (sectionToDelete: GeoJSON.Feature) => {
@@ -120,7 +109,8 @@ export default function SectionCard({
                             Number(e.target.value),
                             section,
                             valueIndex,
-                            coordinateIndex
+                            coordinateIndex,
+                            setSections
                           )
                         }
                         className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
