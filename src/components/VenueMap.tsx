@@ -5,7 +5,7 @@ import "../styles/CustomImageMap.css";
 import { colors } from "../theme/colors";
 import SectionsViewer from "./SectionsViewer";
 import SectionBuilder from "./SectionBuilder";
-import type { Section, Sections } from "../types";
+import type { Section, Sections, SetState } from "../types";
 import { useMapHighlight } from "../hooks/useMapHighlight";
 // import { renderSectionPopoverToString } from "./SectionPopover";
 // import type { Section } from "./SectionPopover";
@@ -30,7 +30,7 @@ export const defaultSection: Section = {
 
 type VenueMapProps = {
   sections: Sections;
-  setSections: React.Dispatch<React.SetStateAction<Sections>>;
+  setSections: SetState<Sections>;
 };
 
 export default function VenueMap({ sections, setSections }: VenueMapProps) {

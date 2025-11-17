@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { defaultSection } from "./VenueMap";
-import type { Section, Sections } from "../types";
+import type { Section, Sections, SetState } from "../types";
 
 type SectionBuilderProps = {
   newSection: Section;
-  setNewSection: React.Dispatch<React.SetStateAction<Section>>;
+  setNewSection: SetState<Section>;
   coordinates: [number, number][];
-  setCoordinates: React.Dispatch<React.SetStateAction<[number, number][]>>;
+  setCoordinates: SetState<[number, number][]>;
   sections: Sections;
-  setSections: React.Dispatch<React.SetStateAction<Sections>>;
+  setSections: SetState<Sections>;
 };
 
 export default function SectionBuilder({

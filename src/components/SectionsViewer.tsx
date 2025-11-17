@@ -1,10 +1,10 @@
 import { apiEndpoint } from "../App";
-import type { Sections } from "../types";
+import type { Sections, SetState } from "../types";
 import SectionCard from "./SectionCard";
 
 type SectionsViewerProps = {
   sections: Sections;
-  setSections: React.Dispatch<React.SetStateAction<Sections>>;
+  setSections: SetState<Sections>;
   onSectionCardHover: (sectionId: string) => void;
   onSectionCardLeave: () => void;
 };
