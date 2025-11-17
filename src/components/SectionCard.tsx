@@ -2,34 +2,34 @@ import { useState } from "react";
 import type { Section, Sections } from "../types";
 
 type SectionCardProps = {
-  feature: Section;
+  section: Section;
   setSections: React.Dispatch<React.SetStateAction<Sections>>;
   onHover: (sectionName: string) => void;
   onLeave: () => void;
 };
 
 export default function SectionCard({
-  feature,
+  section,
   setSections,
   onHover,
   onLeave,
 }: SectionCardProps) {
   const {
-    properties: { section },
+    properties: { section: sectionName },
     geometry: { coordinates },
-  } = feature;
+  } = section;
   const [isOpen, setIsOpen] = useState(false);
 
   const updateCoordinate = (
     value: number,
-    section: string,
+    sectionName: string,
     valueIndex: number,
     coordinateIndex: number,
     setSections: React.Dispatch<React.SetStateAction<Sections>>
   ) => {
     setSections((prevSections) => {
       const updatedFeatures = prevSections.features.map((feature) => {
-        if (feature.properties && feature.properties.section === section) {
+        if (feature.properties && feature.properties.section === sectionName) {
           const updatedCoordinates = feature.geometry.coordinates[0].map(
             (coordinate, coordIndex) => {
               if (coordIndex === coordinateIndex) {
@@ -73,11 +73,11 @@ export default function SectionCard({
   return (
     <div
       className={`p-3 bg-gray-900 rounded-lg border border-gray-800 transition-all duration-200 cursor-pointer hover:border-blue-400`}
-      onMouseEnter={() => section && onHover(section)}
+      onMouseEnter={() => section && onHover(sectionName)}
       onMouseLeave={onLeave}
     >
       <div className="flex justify-between items-center">
-        <h4 className="font-semibold text-md text-white">{section}</h4>
+        <h4 className="font-semibold text-md text-white">{sectionName}</h4>
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="text-sm text-blue-400 border border-blue-400 px-2 py-1 rounded shadow-md shadow-blue-900 hover:bg-blue-500 hover:text-white transition-colors duration-200"
@@ -107,7 +107,7 @@ export default function SectionCard({
                         onChange={(e) =>
                           updateCoordinate(
                             Number(e.target.value),
-                            section,
+                            sectionName,
                             valueIndex,
                             coordinateIndex,
                             setSections
@@ -125,7 +125,7 @@ export default function SectionCard({
           <button
             className="mt-4 w-full px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
             onClick={() => {
-              deleteSection(feature);
+              deleteSection(section);
             }}
           >
             Delete Section

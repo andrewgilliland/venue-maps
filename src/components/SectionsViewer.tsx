@@ -75,7 +75,7 @@ export default function SectionsViewer({
                   {features.map((feature, index) => (
                     <SectionCard
                       key={index}
-                      feature={feature}
+                      section={feature}
                       setSections={setSections}
                       onHover={(sectionName) => onSectionCardHover(sectionName)}
                       onLeave={() => onSectionCardLeave()}
