@@ -54,15 +54,20 @@ export const useMap = (mapRef: React.RefObject<Map | null>) => {
   );
 
   const setNewSectionData = useCallback(
-    (newSection: SectionsFeatureColletion) => {
+    (newSectionFeatureCollection: SectionsFeatureColletion) => {
       if (!mapRef.current) return;
+
+      // console.log(
+      //   "new section coordinates: ",
+      //   newSectionFeatureCollection.features[0].geometry.coordinates[0]
+      // );
 
       const source = mapRef.current.getSource("new-section");
 
       if (source && source.type === "geojson") {
         // Cast to GeoJSONSource and use setData
         const geoJsonSource = source as GeoJSONSource;
-        geoJsonSource.setData(newSection);
+        geoJsonSource.setData(newSectionFeatureCollection);
       }
     },
     [mapRef]

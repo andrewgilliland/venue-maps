@@ -11,9 +11,6 @@ import type {
   SetState,
 } from "../types";
 import { useMap } from "../hooks/useMap";
-// import { renderSectionPopoverToString } from "./SectionPopover";
-// import type { Section } from "./SectionPopover";
-// import MapLegend from "./MapLegend";
 
 export const defaultSection: SectionFeature = {
   type: "Feature",
@@ -33,11 +30,14 @@ export const defaultSection: SectionFeature = {
 };
 
 type VenueMapProps = {
-  sections: SectionsFeatureColletion;
-  setSections: SetState<SectionsFeatureColletion>;
+  sectionsFeatureCollection: SectionsFeatureColletion;
+  setSectionsFeatureCollection: SetState<SectionsFeatureColletion>;
 };
 
-export default function VenueMap({ sections, setSections }: VenueMapProps) {
+export default function VenueMap({
+  sectionsFeatureCollection: sectionsFeatureCollection,
+  setSectionsFeatureCollection: setSectionsFeatureCollection,
+}: VenueMapProps) {
   const imageUrl = "/notre-dame-stadium.webp"; // Path to your custom image
   // Define source names as constants
   const imageSourceName = "venue-image";
@@ -54,19 +54,12 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   const map = useRef<Map | null>(null);
   const hoverPopup = useRef<Popup | null>(null);
 
-  const {
-    highlightSection,
-    clearHighlight,
-    setSectionsData,
-    setNewSectionData,
-  } = useMap(map);
-
   const [mapZoom, setMapZoom] = useState(mediumZoom);
   const [mapCenter, setMapCenter] = useState<[number, number]>([0, 0]);
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
   const [coordinates, setCoordinates] = useState<[number, number][]>([]);
-  const [newSection, setNewSection] = useState<SectionFeature>({
+  const [newSectionFeature, setNewSectionFeature] = useState<SectionFeature>({
     type: "Feature",
     properties: {
       section: "",
@@ -85,11 +78,17 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
 
   const newGeoJson: SectionsFeatureColletion = {
     type: "FeatureCollection",
-    features: [newSection],
+    features: [newSectionFeature],
   };
 
-  // useMap hook calls
-  setSectionsData(sections);
+  const {
+    highlightSection,
+    clearHighlight,
+    setSectionsData,
+    setNewSectionData,
+  } = useMap(map);
+
+  setSectionsData(sectionsFeatureCollection);
   setNewSectionData(newGeoJson);
 
   const updateNewSection = (
@@ -100,14 +99,19 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       updatedNewSection.properties = { section: "" };
     }
 
-    setCoordinates((prev) => [...prev, coords[0]]);
+    setCoordinates((prev) => {
+      console.log("prev: ", prev);
+      return [...prev, coords[0]];
+    });
+
+    console.log("coordinates: ", coordinates);
 
     updatedNewSection.geometry = {
       type: "Polygon",
-      coordinates: [[...coordinates]],
+      coordinates: [[...coordinates, coords[0]]],
     };
 
-    setNewSection(updatedNewSection);
+    setNewSectionFeature(updatedNewSection);
   };
 
   const zoomIn = () => {
@@ -173,7 +177,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       // Seating sections source
       map.current!.addSource(seatingLayerName, {
         type: "geojson",
-        data: sections as GeoJSON.FeatureCollection,
+        data: sectionsFeatureCollection as GeoJSON.FeatureCollection,
       });
 
       // Seating sections heat map based on sales percentage
@@ -444,7 +448,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
         const x = Number(coords.lng.toFixed(3));
         const y = Number(coords.lat.toFixed(3));
 
-        updateNewSection({ ...newSection }, [[x, y]]);
+        updateNewSection({ ...newSectionFeature }, [[x, y]]);
       });
 
       // �🖱️ Hover popup functionality
@@ -533,17 +537,17 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       map.current?.remove();
       map.current = null;
     };
-  }, []);
+  }, [coordinates]);
 
   return (
     <div className="flex justify-between gap-4">
       <SectionBuilder
-        newSection={newSection}
-        setNewSection={setNewSection}
+        newSection={newSectionFeature}
+        setNewSection={setNewSectionFeature}
         coordinates={coordinates}
         setCoordinates={setCoordinates}
-        sections={sections}
-        setSections={setSections}
+        sections={sectionsFeatureCollection}
+        setSections={setSectionsFeatureCollection}
       />
       <div className="relative">
         <div
@@ -578,8 +582,8 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
       </div>
 
       <SectionsViewer
-        sections={sections}
-        setSections={setSections}
+        sections={sectionsFeatureCollection}
+        setSections={setSectionsFeatureCollection}
         onSectionCardHover={highlightSection}
         onSectionCardLeave={clearHighlight}
       />
