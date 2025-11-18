@@ -1,8 +1,8 @@
 import { useState } from "react";
-import type { Section, Sections, SetState } from "../types";
+import type { SectionFeature, Sections, SetState } from "../types";
 
 type SectionCardProps = {
-  section: Section;
+  section: SectionFeature;
   setSections: SetState<Sections>;
   onHover: (sectionName: string) => void;
   onLeave: () => void;

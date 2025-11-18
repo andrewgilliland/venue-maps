@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { defaultSection } from "./VenueMap";
-import type { Section, Sections, SetState } from "../types";
+import type { SectionFeature, Sections, SetState } from "../types";
 
 type SectionBuilderProps = {
-  newSection: Section;
-  setNewSection: SetState<Section>;
+  newSection: SectionFeature;
+  setNewSection: SetState<SectionFeature>;
   coordinates: [number, number][];
   setCoordinates: SetState<[number, number][]>;
   sections: Sections;
@@ -29,7 +29,7 @@ export default function SectionBuilder({
   const disabled =
     coordinates.length < 5 || sectionName.trim() === "" || !hasUniqueName;
 
-  const addSection = (newSection: Section) => {
+  const addSection = (newSection: SectionFeature) => {
     setSections((prevSections) => {
       const updatedFeatures = [...prevSections.features, newSection];
 
@@ -38,7 +38,7 @@ export default function SectionBuilder({
   };
 
   const updateNewSection = (
-    updatedNewSection: Section,
+    updatedNewSection: SectionFeature,
     coordinates: [number, number][]
   ) => {
     if (!updatedNewSection.properties) {
@@ -55,7 +55,7 @@ export default function SectionBuilder({
   };
 
   const updateNewSectionSectionName = (
-    updatedNewSection: Section,
+    updatedNewSection: SectionFeature,
     sectionName: string
   ) => {
     if (!updatedNewSection.properties) {

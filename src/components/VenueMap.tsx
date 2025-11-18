@@ -6,7 +6,7 @@ import { colors } from "../theme/colors";
 import SectionsViewer from "./SectionsViewer";
 import SectionBuilder from "./SectionBuilder";
 import type {
-  Section,
+  SectionFeature,
   SectionsFeatureColletion,
   Sections,
   SetState,
@@ -16,7 +16,7 @@ import { useMap } from "../hooks/useMap";
 // import type { Section } from "./SectionPopover";
 // import MapLegend from "./MapLegend";
 
-export const defaultSection: Section = {
+export const defaultSection: SectionFeature = {
   type: "Feature",
   properties: {
     section: "",
@@ -67,7 +67,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
   const [coordinates, setCoordinates] = useState<[number, number][]>([]);
-  const [newSection, setNewSection] = useState<Section>({
+  const [newSection, setNewSection] = useState<SectionFeature>({
     type: "Feature",
     properties: {
       section: "",
@@ -94,7 +94,7 @@ export default function VenueMap({ sections, setSections }: VenueMapProps) {
   setNewSectionData(newGeoJson);
 
   const updateNewSection = (
-    updatedNewSection: Section,
+    updatedNewSection: SectionFeature,
     coords: [number, number][]
   ) => {
     if (!updatedNewSection.properties) {

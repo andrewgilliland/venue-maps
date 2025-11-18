@@ -2,7 +2,10 @@ import type { Dispatch, SetStateAction } from "react";
 
 export type SetState<T> = Dispatch<SetStateAction<T>>;
 
-export type Section = GeoJSON.Feature<GeoJSON.Polygon, SectionProperties>;
+export type SectionFeature = GeoJSON.Feature<
+  GeoJSON.Polygon,
+  SectionProperties
+>;
 
 export type Sections = GeoJSON.FeatureCollection<
   GeoJSON.Polygon,
