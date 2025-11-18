@@ -7,11 +7,6 @@ export type SectionFeature = GeoJSON.Feature<
   SectionProperties
 >;
 
-export type Sections = GeoJSON.FeatureCollection<
-  GeoJSON.Polygon,
-  SectionProperties
->;
-
 export type SectionsFeatureColletion = GeoJSON.FeatureCollection<
   GeoJSON.Polygon,
   SectionProperties
@@ -26,3 +21,9 @@ export type SectionProperties = {
   revenue?: number;
   salesPercentage?: number;
 };
+
+export type SalesStatus =
+  | "🔥 Hot Seller!"
+  | "✅ Good Sales"
+  | "⚠️ Average Sales"
+  | "❄️ Slow Sales";

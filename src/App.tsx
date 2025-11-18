@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import VenueMap from "./components/VenueMap";
-import type { Sections } from "./types";
+import type { SectionsFeatureColletion } from "./types";
 
 export const apiEndpoint = `${import.meta.env.VITE_API_URL}/sections`;
 
 function App() {
-  const [sections, setSections] = useState<Sections>({
+  const [sections, setSections] = useState<SectionsFeatureColletion>({
     type: "FeatureCollection",
     features: [],
   });
@@ -15,6 +15,7 @@ function App() {
       try {
         const response = await fetch(apiEndpoint);
         const data = await response.json();
+        console.log("data: ", data);
         setSections(data);
       } catch (error) {
         console.error("Error fetching seating data:", error);

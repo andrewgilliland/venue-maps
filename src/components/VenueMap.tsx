@@ -8,7 +8,6 @@ import SectionBuilder from "./SectionBuilder";
 import type {
   SectionFeature,
   SectionsFeatureColletion,
-  Sections,
   SetState,
 } from "../types";
 import { useMap } from "../hooks/useMap";
@@ -35,7 +34,7 @@ export const defaultSection: SectionFeature = {
 
 type VenueMapProps = {
   sections: SectionsFeatureColletion;
-  setSections: SetState<Sections>;
+  setSections: SetState<SectionsFeatureColletion>;
 };
 
 export default function VenueMap({ sections, setSections }: VenueMapProps) {

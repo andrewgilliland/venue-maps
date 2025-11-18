@@ -1,10 +1,10 @@
 import { apiEndpoint } from "../App";
-import type { Sections, SetState } from "../types";
+import type { SectionsFeatureColletion, SetState } from "../types";
 import SectionCard from "./SectionCard";
 
 type SectionsViewerProps = {
-  sections: Sections;
-  setSections: SetState<Sections>;
+  sections: SectionsFeatureColletion;
+  setSections: SetState<SectionsFeatureColletion>;
   onSectionCardHover: (sectionId: string) => void;
   onSectionCardLeave: () => void;
 };

@@ -1,21 +1,7 @@
-export type SalesStatus =
-  | "🔥 Hot Seller!"
-  | "✅ Good Sales"
-  | "⚠️ Average Sales"
-  | "❄️ Slow Sales";
-
-export type Section = {
-  section: string;
-  capacity: number;
-  price: string;
-  tier: string;
-  seatsSold: number;
-  revenue: number;
-  salesPercentage: number;
-};
+import type { SalesStatus, SectionProperties } from "../types";
 
 type SectionPopoverProps = {
-  section: Section;
+  section: SectionProperties;
   seatsAvailable: number;
   salesStatus: SalesStatus;
 };
@@ -62,7 +48,7 @@ export const SectionPopover: React.FC<SectionPopoverProps> = ({
 
 // Helper function to render the component to HTML string for MapLibre popups
 export const renderSectionPopoverToString = (
-  properties: Section,
+  properties: SectionProperties,
   seatsAvailable: number,
   salesStatus: SalesStatus
 ): string => {

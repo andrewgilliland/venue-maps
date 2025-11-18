@@ -1,9 +1,13 @@
 import { useState } from "react";
-import type { SectionFeature, Sections, SetState } from "../types";
+import type {
+  SectionFeature,
+  SectionsFeatureColletion,
+  SetState,
+} from "../types";
 
 type SectionCardProps = {
   section: SectionFeature;
-  setSections: SetState<Sections>;
+  setSections: SetState<SectionsFeatureColletion>;
   onHover: (sectionName: string) => void;
   onLeave: () => void;
 };
@@ -25,7 +29,7 @@ export default function SectionCard({
     sectionName: string,
     valueIndex: number,
     coordinateIndex: number,
-    setSections: SetState<Sections>
+    setSections: SetState<SectionsFeatureColletion>
   ) => {
     setSections((prevSections) => {
       const updatedFeatures = prevSections.features.map((feature) => {
