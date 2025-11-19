@@ -105,7 +105,15 @@ export default function VenueMap({
         type: "Polygon",
         coordinates: [[...prev, coords[0]]],
       };
-      setNewSectionFeature(updatedNewSection);
+
+      // ✅ Preserve the existing section name from previous state
+      setNewSectionFeature((prevSection) => ({
+        ...updatedNewSection,
+        properties: {
+          ...updatedNewSection.properties,
+          section: prevSection.properties.section, // Keep the previous section name
+        },
+      }));
 
       return [...prev, coords[0]];
     });
