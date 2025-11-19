@@ -76,7 +76,7 @@ export default function VenueMap({
     },
   });
 
-  const newGeoJson: SectionsFeatureColletion = {
+  const newSectionFeatureCollection: SectionsFeatureColletion = {
     type: "FeatureCollection",
     features: [newSectionFeature],
   };
@@ -89,7 +89,7 @@ export default function VenueMap({
   } = useMap(map);
 
   setSectionsData(sectionsFeatureCollection);
-  setNewSectionData(newGeoJson);
+  setNewSectionData(newSectionFeatureCollection);
 
   const updateNewSection = (
     updatedNewSection: SectionFeature,
@@ -99,19 +99,16 @@ export default function VenueMap({
       updatedNewSection.properties = { section: "" };
     }
 
+    // This is hacky but ensures state updates correctly
     setCoordinates((prev) => {
-      console.log("prev: ", prev);
+      updatedNewSection.geometry = {
+        type: "Polygon",
+        coordinates: [[...prev, coords[0]]],
+      };
+      setNewSectionFeature(updatedNewSection);
+
       return [...prev, coords[0]];
     });
-
-    console.log("coordinates: ", coordinates);
-
-    updatedNewSection.geometry = {
-      type: "Polygon",
-      coordinates: [[...coordinates, coords[0]]],
-    };
-
-    setNewSectionFeature(updatedNewSection);
   };
 
   const zoomIn = () => {
@@ -211,7 +208,7 @@ export default function VenueMap({
       // New section source
       map.current!.addSource(newSectionLayerName, {
         type: "geojson",
-        data: newGeoJson as GeoJSON.FeatureCollection,
+        data: newSectionFeatureCollection as GeoJSON.FeatureCollection,
       });
 
       // New section layer
@@ -448,7 +445,7 @@ export default function VenueMap({
         const x = Number(coords.lng.toFixed(3));
         const y = Number(coords.lat.toFixed(3));
 
-        updateNewSection({ ...newSectionFeature }, [[x, y]]);
+        updateNewSection(newSectionFeature, [[x, y]]);
       });
 
       // �🖱️ Hover popup functionality
@@ -537,7 +534,7 @@ export default function VenueMap({
       map.current?.remove();
       map.current = null;
     };
-  }, [coordinates]);
+  }, []);
 
   return (
     <div className="flex justify-between gap-4">

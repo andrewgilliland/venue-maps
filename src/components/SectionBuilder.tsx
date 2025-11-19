@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { defaultSection } from "./VenueMap";
 import type {
   SectionFeature,
@@ -23,9 +22,7 @@ export default function SectionBuilder({
   sections,
   setSections,
 }: SectionBuilderProps) {
-  const [sectionName, setSectionName] = useState<string>(
-    newSection.properties?.section
-  );
+  const sectionName = newSection.properties.section;
 
   const hasUniqueName = !sections.features.some(
     (feature) => feature.properties?.section === sectionName
@@ -58,20 +55,6 @@ export default function SectionBuilder({
     setNewSection(updatedNewSection);
   };
 
-  const updateNewSectionSectionName = (
-    updatedNewSection: SectionFeature,
-    sectionName: string
-  ) => {
-    if (!updatedNewSection.properties) {
-      updatedNewSection.properties = { section: "" };
-    }
-
-    updatedNewSection.properties.section = sectionName;
-
-    setNewSection(updatedNewSection);
-    setSectionName(sectionName);
-  };
-
   const deleteCoordinate = (index: number) => {
     setCoordinates((prev) => prev.filter((_, i) => i !== index));
   };
@@ -90,7 +73,6 @@ export default function SectionBuilder({
     }
 
     addSection({ ...newSection });
-    setSectionName("");
     setCoordinates([]);
     setNewSection(defaultSection);
   };
@@ -113,8 +95,10 @@ export default function SectionBuilder({
           type="text"
           value={sectionName}
           onChange={(e) => {
-            // setSectionName(e.target.value);
-            updateNewSectionSectionName({ ...newSection }, e.target.value);
+            setNewSection((prev) => ({
+              ...prev,
+              properties: { ...prev.properties, section: e.target.value },
+            }));
           }}
           className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
           placeholder="Enter section name"
