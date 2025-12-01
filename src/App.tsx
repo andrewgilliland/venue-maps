@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import VenueMap from "./components/VenueMap";
 import type { SectionsFeatureColletion } from "./types";
 
-export const apiEndpoint = `${import.meta.env.VITE_API_URL}/sections`;
+export const apiEndpoint = `${
+  import.meta.env.VITE_API_URL
+}/sections/notre-dame`;
 
 function App() {
   const [sectionsFeatureCollection, setSectionsFeatureCollection] =
