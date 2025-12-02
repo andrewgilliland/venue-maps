@@ -1,0 +1,140 @@
+name: Deploy Infrastructure
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "infra/**"
+      - ".github/workflows/deploy-infrastructure.yml"
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  STACK_NAME: venue-maps-infrastructure
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy-cloudformation:
+    name: Deploy CloudFormation Stack
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHub_Actions_Role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Validate CloudFormation template
+        run: |
+          echo "🔍 Validating CloudFormation template..."
+          aws cloudformation validate-template \
+            --template-body file://infra/venue-maps-infrastructure.yml
+          echo "✅ Template is valid"
+
+      - name: Check if stack exists
+        id: check-stack
+        run: |
+          if aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }} 2>/dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "📦 Stack exists - will update"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "🆕 Stack does not exist - will create"
+          fi
+
+      - name: Deploy CloudFormation stack
+        run: |
+          if [ "${{ steps.check-stack.outputs.exists }}" == "true" ]; then
+            echo "🔄 Updating CloudFormation stack: ${{ env.STACK_NAME }}"
+            
+            aws cloudformation update-stack \
+              --stack-name ${{ env.STACK_NAME }} \
+              --template-body file://infra/venue-maps-infrastructure.yml \
+              --parameters file://infra/parameters.json \
+              --capabilities CAPABILITY_IAM || {
+              EXIT_CODE=$?
+              if [ $EXIT_CODE -eq 254 ]; then
+                echo "ℹ️  No updates to be performed"
+                exit 0
+              else
+                echo "❌ Update failed with exit code: $EXIT_CODE"
+                exit $EXIT_CODE
+              fi
+            }
+            
+            echo "⏳ Waiting for stack update to complete..."
+            aws cloudformation wait stack-update-complete \
+              --stack-name ${{ env.STACK_NAME }}
+            
+            echo "✅ Stack updated successfully!"
+          else
+            echo "🚀 Creating CloudFormation stack: ${{ env.STACK_NAME }}"
+            
+            aws cloudformation create-stack \
+              --stack-name ${{ env.STACK_NAME }} \
+              --template-body file://infra/venue-maps-infrastructure.yml \
+              --parameters file://infra/parameters.json \
+              --capabilities CAPABILITY_IAM \
+              --tags \
+                Key=Project,Value=venue-maps \
+                Key=Environment,Value=production \
+                Key=ManagedBy,Value=CloudFormation
+            
+            echo "⏳ Waiting for stack creation to complete..."
+            aws cloudformation wait stack-create-complete \
+              --stack-name ${{ env.STACK_NAME }}
+            
+            echo "✅ Stack created successfully!"
+          fi
+
+      - name: Get stack outputs
+        run: |
+          echo "📊 Stack Outputs:"
+          aws cloudformation describe-stacks \
+            --stack-name ${{ env.STACK_NAME }} \
+            --query 'Stacks[0].Outputs[*].[OutputKey,OutputValue,Description]' \
+            --output table
+
+          echo ""
+          echo "📦 Resource Details:"
+
+          BUCKET_NAME=$(aws cloudformation describe-stacks \
+            --stack-name ${{ env.STACK_NAME }} \
+            --query 'Stacks[0].Outputs[?OutputKey==`BucketName`].OutputValue' \
+            --output text)
+
+          DISTRIBUTION_ID=$(aws cloudformation describe-stacks \
+            --stack-name ${{ env.STACK_NAME }} \
+            --query 'Stacks[0].Outputs[?OutputKey==`CloudFrontDistributionId`].OutputValue' \
+            --output text)
+
+          WEBSITE_URL=$(aws cloudformation describe-stacks \
+            --stack-name ${{ env.STACK_NAME }} \
+            --query 'Stacks[0].Outputs[?OutputKey==`WebsiteURL`].OutputValue' \
+            --output text)
+
+          echo "  📦 S3 Bucket: $BUCKET_NAME"
+          echo "  🌐 CloudFront Distribution: $DISTRIBUTION_ID"
+          echo "  🔗 Website URL: $WEBSITE_URL"
+
+          echo ""
+          echo "💡 To update your deploy.yml, use these values:"
+          echo "  S3_BUCKET: $BUCKET_NAME"
+          echo "  CLOUDFRONT_DISTRIBUTION_ID: $DISTRIBUTION_ID"
+
+      - name: Show stack events (on failure)
+        if: failure()
+        run: |
+          echo "❌ Deployment failed. Recent stack events:"
+          aws cloudformation describe-stack-events \
+            --stack-name ${{ env.STACK_NAME }} \
+            --max-items 10 \
+            --query 'StackEvents[*].[Timestamp,ResourceStatus,ResourceType,LogicalResourceId,ResourceStatusReason]' \
+            --output table
