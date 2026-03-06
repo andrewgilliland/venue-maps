@@ -1,0 +1,29 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "section": "N1411",
+        "capacity": 50,
+        "price": "$60",
+        "tier": "Upper Level",
+        "seatsSold": 20,
+        "revenue": 1200,
+        "salesPercentage": 40
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-0.422, 0.263],
+            [-0.422, 0.165],
+            [-0.347, 0.165],
+            [-0.347, 0.263],
+            [-0.422, 0.263]
+          ]
+        ]
+      }
+    }
+  ]
+}
