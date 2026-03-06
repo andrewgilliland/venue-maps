@@ -30,6 +30,7 @@ function App() {
   return (
     <div className="min-h-screen bg-neutral-950 p-4">
       <VenueMap
+        imageUrl="/old-trafford-2.webp"
         sectionsFeatureCollection={sectionsFeatureCollection}
         setSectionsFeatureCollection={setSectionsFeatureCollection}
       />

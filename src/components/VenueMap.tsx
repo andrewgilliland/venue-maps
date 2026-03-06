@@ -30,15 +30,16 @@ export const defaultSection: SectionFeature = {
 };
 
 type VenueMapProps = {
+  imageUrl: string;
   sectionsFeatureCollection: SectionsFeatureColletion;
   setSectionsFeatureCollection: SetState<SectionsFeatureColletion>;
 };
 
 export default function VenueMap({
+  imageUrl,
   sectionsFeatureCollection: sectionsFeatureCollection,
   setSectionsFeatureCollection: setSectionsFeatureCollection,
 }: VenueMapProps) {
-  const imageUrl = "/notre-dame-stadium.webp"; // Path to your custom image
   // Define source names as constants
   const imageSourceName = "venue-image";
   const seatingLayerName = "seating-sections";
@@ -47,7 +48,6 @@ export default function VenueMap({
 
   const minZoom = 7;
   const mediumZoom = 8;
-  // const highZoom = 9;
   const maxZoom = 12;
 
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -93,7 +93,7 @@ export default function VenueMap({
 
   const updateNewSection = (
     updatedNewSection: SectionFeature,
-    coords: [number, number][]
+    coords: [number, number][],
   ) => {
     if (!updatedNewSection.properties) {
       updatedNewSection.properties = { section: "" };
@@ -489,7 +489,7 @@ export default function VenueMap({
             <div class="px-2 py-1 text-center bg-gray-900 text-white rounded-lg shadow-xl border-0">
               <div class="font-semibold text-sm">Section ${properties.section}</div>
             </div>
-          `
+          `,
           )
           .addTo(map.current!);
       });
